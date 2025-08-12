@@ -401,25 +401,8 @@
   // Contacto
   function initContactPage(){
     const form = $('#contactForm'); if(!form) return;
-    form.addEventListener('submit', (e)=>{
-      e.preventDefault();
-      const fd = new FormData(form);
-      const name = (fd.get('name')||'').toString().trim();
-      const email = (fd.get('email')||'').toString().trim();
-      const message = (fd.get('message')||'').toString().trim();
-      if(!name || !email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email) || !message){
-        toast('Por favor completa los campos correctamente.', 'error');
-        return;
-      }
-      // Simulación de envío
-      setTimeout(()=> toast('Mensaje enviado con éxito. ¡Gracias!', 'success'), 500);
-    });
-
-    $('#mailtoBtn')?.addEventListener('click', ()=>{
-      const subject = encodeURIComponent('Contacto desde portafolio');
-      const body = encodeURIComponent('Hola Alejandro,\n\n');
-      location.href = `mailto:alejandro@example.com?subject=${subject}&body=${body}`;
-    });
+    // Netlify Forms maneja la validación nativa del navegador y el envío del formulario.
+    // No interceptamos el submit para no romper el procesamiento en el build de Netlify.
   }
 
   // Blog: lista de notas
