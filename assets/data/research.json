@@ -1,0 +1,20 @@
+[
+  {
+    "title": "Medición espectral con rejilla y cámara",
+    "year": 2023,
+    "abstract": "Prototipo de espectroscopio y validación con fuentes de referencia.",
+    "pdfPath": "public/docs/paper_1.pdf"
+  },
+  {
+    "title": "Visualización Schlieren asistida por IA",
+    "year": 2024,
+    "abstract": "Detección de gradientes térmicos y realce de bordes en video.",
+    "pdfPath": "public/docs/paper_2.pdf"
+  },
+  {
+    "title": "Análisis de percepciones estudiantiles sobre ChatGPT",
+    "year": 2023,
+    "abstract": "Encuestas globales y modelos para explorar actitudes y uso.",
+    "pdfPath": "public/docs/paper_3.pdf"
+  }
+]

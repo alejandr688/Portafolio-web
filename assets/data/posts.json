@@ -1,0 +1,23 @@
+[
+  {
+    "title": "ANOVA en R: guía express para decidir",
+    "tags": ["R", "Estadística"],
+    "date": "2024-05-12",
+    "excerpt": "Cuándo usar ANOVA y cómo interpretar sus resultados en pocos pasos.",
+    "slug": "anova-r-guia-express"
+  },
+  {
+    "title": "Pipelines con pandas para datos limpios",
+    "tags": ["Python", "Data"],
+    "date": "2024-09-03",
+    "excerpt": "Estructura tus transformaciones con claridad y reproducibilidad.",
+    "slug": "pipelines-pandas-datos-limpios"
+  },
+  {
+    "title": "Schlieren 101: visualizando el aire",
+    "tags": ["Óptica"],
+    "date": "2023-11-20",
+    "excerpt": "Fundamentos y tips prácticos para fotografía Schlieren casera.",
+    "slug": "schlieren-101"
+  }
+]

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Proyectos — Alejandro Pérez Romero</title>
+  <meta name="description" content="Proyectos con filtros, búsqueda por texto y chips de tecnologías." />
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+  <meta property="og:title" content="Proyectos — Alejandro Pérez Romero" />
+  <meta property="og:image" content="./assets/img/placeholder.svg" />
+  <link rel="stylesheet" href="./assets/css/styles.css" />
+</head>
+<body>
+  <main class="container">
+    <section aria-labelledby="titulo" class="reveal">
+      <div class="section-head">
+        <h1 id="titulo">Proyectos</h1>
+        <div style="display:flex; gap:.5rem; align-items:center; flex-wrap:wrap">
+          <div class="searchbar">
+            <label for="search" class="sr-only">Buscar</label>
+            <input id="search" type="search" placeholder="Buscar por título, descripción o etiqueta" aria-label="Buscar proyectos" />
+          </div>
+          <select id="sort" class="sort" aria-label="Ordenar por">
+            <option value="recent">Más reciente</option>
+            <option value="az">A-Z</option>
+          </select>
+        </div>
+      </div>
+      <div class="filters" aria-label="Filtros">
+        <div id="catChips" aria-label="Categorías" role="group"></div>
+        <div id="tagChips" aria-label="Tecnologías" role="group"></div>
+      </div>
+      <div id="projectsGrid" class="grid cards" aria-live="polite"></div>
+    </section>
+  </main>
+  <script src="./assets/js/data.js" defer></script>
+  <script src="./assets/js/app.js" defer></script>
+  <script src="./assets/js/animations.js" defer></script>
+</body>
+</html>

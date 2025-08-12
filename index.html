@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Alejandro Pérez Romero — Portafolio</title>
+  <meta name="description" content="Portafolio de Alejandro Pérez Romero: Data Science, Física/Óptica, Electrónica/IoT y Web." />
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Alejandro Pérez Romero — Portafolio" />
+  <meta property="og:description" content="Proyectos, investigación, blog y contacto." />
+  <meta property="og:image" content="./assets/img/placeholder.svg" />
+  <link rel="stylesheet" href="./assets/css/styles.css" />
+</head>
+<body>
+  <header class="hero" data-parallax>
+    <div class="container hero-inner">
+      <div>
+        <h1>Hola, soy <span style="color:var(--primary)">Alejandro Pérez Romero</span></h1>
+        <p class="lead">Data Science • Física/Óptica • Electrónica/IoT • Web. Me apasiona convertir datos y fenómenos físicos en historias claras y productos útiles.</p>
+        <div class="hero-cta">
+          <a class="btn" href="./projects.html" data-tip="Ver proyectos">🚀 Ver proyectos</a>
+          <a class="btn secondary" href="./public/docs/Alejandro_Perez_Romero_CV.pdf" target="_blank" rel="noopener" data-tip="Descargar CV">⬇️ Descargar CV</a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <picture>
+          <img src="./assets/img/avatar.svg" width="400" height="400" alt="Avatar de Alejandro" />
+        </picture>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section aria-labelledby="destacados" class="reveal">
+      <div class="section-head">
+        <h2 id="destacados">Destacados</h2>
+        <a href="./projects.html">Todos los proyectos →</a>
+      </div>
+      <div class="grid cards">
+        <article class="card" data-tilt>
+          <h3>Fotografía Schlieren con IA</h3>
+          <p>Visualización de gradientes térmicos con setup casero y visión por computadora.</p>
+          <div class="tags"><span class="tag">Python</span><span class="tag">OpenCV</span></div>
+        </article>
+        <article class="card" data-tilt>
+          <h3>Espectroscopio casero</h3>
+          <p>Captura y análisis espectral de fuentes de referencia usando Python.</p>
+          <div class="tags"><span class="tag">Óptica</span><span class="tag">Numpy</span></div>
+        </article>
+        <article class="card" data-tilt>
+          <h3>Contador de pasos con acelerómetro</h3>
+          <p>Filtro y conteo de eventos con umbrales adaptativos (Arduino + MPU6050).</p>
+          <div class="tags"><span class="tag">IoT</span><span class="tag">Señales</span></div>
+        </article>
+      </div>
+    </section>
+
+    <section aria-labelledby="blog-home" class="reveal">
+      <div class="section-head">
+        <h2 id="blog-home">Notas recientes</h2>
+        <a href="./blog.html">Ver blog →</a>
+      </div>
+      <div class="grid cards">
+        <article class="card">
+          <h3>ANOVA en R: guía express</h3>
+          <p>Cuándo usar ANOVA y cómo interpretar sus resultados en pocos pasos.</p>
+        </article>
+        <article class="card">
+          <h3>Pipelines con pandas</h3>
+          <p>Estructura tus transformaciones con claridad y reproducibilidad.</p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <script src="./assets/js/data.js" defer></script>
+  <script src="./assets/js/app.js" defer></script>
+  <script src="./assets/js/animations.js" defer></script>
+</body>
+</html>
