@@ -13,7 +13,7 @@
     bindTheme();
     bindScrollProgress();
     bindSectionIndicator();
-    bindAnchorScrollSpy();
+    // bindAnchorScrollSpy();
     bindCommonUI();
     routeInit();
   }
@@ -35,7 +35,8 @@
           ${navLink('projects.html','Proyectos')}
           ${navLink('research.html','Investigación')}
           ${navLink('blog.html','Blog')}
-          ${navLink('talks.html','Charlas')}
+          ${navLink('talks.html','Mi Canal')}
+          ${navLink('certificates.html','Certificados')}
           ${navLink('resume.html','CV')}
           ${navLink('contact.html','Contacto')}
         </nav>
@@ -175,6 +176,8 @@
     if(page === 'contact.html') initContactPage();
     if(page === 'blog.html') initBlogPage();
     if(page === 'research.html') initResearchPage();
+    if(page === 'talks.html') initTalksPage();
+    if(page === 'certificates.html') initCertificatesPage();
   }
 
   // Toast API
@@ -400,8 +403,32 @@
   // Contacto
   function initContactPage(){
     const form = $('#contactForm'); if(!form) return;
-    // Netlify Forms maneja la validación nativa del navegador y el envío del formulario.
-    // No interceptamos el submit para no romper el procesamiento en el build de Netlify.
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const status = form.querySelector('button[type=submit]');
+      const data = new FormData(form);
+      status.disabled = true;
+      status.textContent = 'Enviando...';
+      try {
+        const res = await fetch(form.action, {
+          method: 'POST',
+          body: data,
+          headers: { 'Accept': 'application/json' }
+        });
+        if (res.ok) {
+          toast('¡Mensaje enviado con éxito!', 'success');
+          form.reset();
+        } else {
+          const err = await res.json();
+          toast(`Error: ${err.error || 'No se pudo enviar.'}`, 'error');
+        }
+      } catch (err) {
+        toast('Error de red. Intenta de nuevo.', 'error');
+      } finally {
+        status.disabled = false;
+        status.textContent = 'Enviar';
+      }
+    });
   }
 
   // Blog: lista de notas
@@ -436,4 +463,35 @@
       </article>
     `).join('');
   }
+  // Talks: videos de YouTube
+  // Certificates: PDFs
+  async function initCertificatesPage(){
+    const list = document.querySelector('#certificatesGrid');
+    if(!list) return;
+    const items = await window.DataAPI.loadCertificates();
+    list.innerHTML = items.map(c=>`
+      <article class="card reveal">
+        <h3>${c.title}</h3>
+        <div style="aspect-ratio:4/3; border-radius:8px; overflow:hidden; background:#fff;">
+          <iframe src="${c.path}#toolbar=0&navpanes=0&scrollbar=0" width="100%" height="100%" title="${c.title}" frameborder="0" loading="lazy"></iframe>
+        </div>
+        <a class="btn secondary" href="${c.path}" target="_blank" rel="noopener">Ver Completo</a>
+      </article>
+    `).join('');
+  }
+  // Talks: videos de YouTube
+  async function initTalksPage(){
+    const list = document.querySelector('#talksGrid');
+    if(!list) return;
+    const items = await window.DataAPI.loadTalks();
+    list.innerHTML = items.map(t=>`
+      <article class="card reveal">
+        <h3>${t.title}</h3>
+        <div style="aspect-ratio:16/9; background:#111; border-radius:8px; overflow:hidden;">
+          <iframe width="100%" height="100%" src="https://www.youtube.com/embed/${t.videoId}" title="${t.title}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+        </div>
+      </article>
+    `).join('');
+  }
+
 })();

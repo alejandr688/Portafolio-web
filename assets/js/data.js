@@ -132,8 +132,48 @@ async function loadJSON(url, fallback) {
   }
 }
 
+const CERTIFICATES_SEED = [
+  {
+    "title": "Currículum Vitae",
+    "path": "./public/docs/Alejandro_Perez_Romero_CV.pdf"
+  },
+  {
+    "title": "Certificado de Idiomas",
+    "path": "./public/docs/idiomas alejandro.pdf"
+  },
+  {
+    "title": "Coursera: Understanding and Visualizing Data with Python",
+    "path": "./public/docs/Coursera IVIAKDLVX4M8.pdf"
+  },
+  {
+    "title": "Coursera: What is Data Science?",
+    "path": "./public/docs/Coursera NJFONI0SH73M.pdf"
+  },
+  {
+    "title": "Coursera: Data Science Tools",
+    "path": "./public/docs/Coursera XENK764EJN0W.pdf"
+  }
+];
+
+const TALKS_SEED = [
+  {
+    "title": "¿Qué son los números perfectos?",
+    "videoId": "jCJtCNnuivQ"
+  },
+  {
+    "title": "Tablero de ajedrez mermano",
+    "videoId": "RfWKDlTj08c"
+  },
+  {
+    "title": "Numeros sociables",
+    "videoId": "5XS0kITyqu8"
+  }
+];
+
 window.DataAPI = {
-  loadProjects() { return loadJSON('assets/data/projects.json', PROJECTS_SEED); },
+  loadProjects() { return Promise.resolve(PROJECTS_SEED); },
   loadPosts() { return loadJSON('assets/data/posts.json', POSTS_SEED); },
-  loadResearch() { return loadJSON('assets/data/research.json', RESEARCH_SEED); }
+  loadResearch() { return loadJSON('assets/data/research.json', RESEARCH_SEED); },
+  loadTalks() { return Promise.resolve(TALKS_SEED); },
+  loadCertificates() { return Promise.resolve(CERTIFICATES_SEED); }
 };

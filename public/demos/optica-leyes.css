@@ -1,0 +1,182 @@
+/* Estilos para el simulador de óptica */
+body {
+  background-color: #0f172a;
+  color: #e2e8f0;
+}
+
+.container {
+  max-width: 1024px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+h1 {
+  font-size: 1.875rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+p.lead {
+  color: #94a3b8;
+  margin-bottom: 1.5rem;
+  max-width: 48rem;
+}
+
+.simulator-layout {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.canvas-container {
+  flex: 3;
+  min-width: 400px;
+}
+
+.controls-sidebar {
+  flex: 1;
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.control-card {
+  background-color: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 1rem;
+  padding: 1rem;
+}
+
+.control-card h2 {
+  font-weight: 500;
+  font-size: 1.125rem;
+  margin-bottom: 0.75rem;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.875rem;
+  color: #94a3b8;
+  margin-bottom: 0.25rem;
+}
+
+.form-group select,
+.form-group input[type="number"] {
+  width: 100%;
+  background-color: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  color: #e2e8f0;
+}
+
+.toggle-group {
+  display: inline-flex;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  border: 1px solid #334155;
+}
+
+.toggle-group button {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  background-color: transparent;
+  color: #94a3b8;
+  border: none;
+  cursor: pointer;
+}
+
+.toggle-group button.active {
+  background-color: #334155;
+  color: #e2e8f0;
+}
+
+input[type="range"] {
+  width: 100%;
+}
+
+.color-inputs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+.color-inputs label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+}
+
+.color-inputs input[type="color"] {
+  height: 2.25rem;
+  width: 100%;
+  border-radius: 0.375rem;
+  overflow: hidden;
+  border: none;
+  cursor: pointer;
+}
+
+.results-list {
+  list-style: none;
+  padding: 0;
+  font-size: 0.875rem;
+  line-height: 1.75;
+  color: #cbd5e1;
+}
+
+.results-list b {
+  color: #f1f5f9;
+  font-weight: 500;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.btn {
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid #334155;
+  background-color: #1e293b;
+  color: #e2e8f0;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background-color: #334155;
+}
+
+/* Estilo del canvas-container movido a .simulator-layout */
+
+#scene {
+  width: 100%;
+  height: auto;
+  border-radius: 0.75rem;
+  background-color: #0f172a;
+  cursor: crosshair;
+}
+
+.notes-card {
+  margin-top: 1.5rem;
+  border: 1px solid #334155;
+  border-radius: 1rem;
+  padding: 1rem;
+  background-color: #1e293b;
+}
+
+.notes-card ul {
+  list-style: disc;
+  padding-left: 1.5rem;
+  color: #94a3b8;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
