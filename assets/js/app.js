@@ -14,7 +14,6 @@
     bindScrollProgress();
     bindSectionIndicator();
     bindAnchorScrollSpy();
-    bindPageLightbox();
     bindCommonUI();
     routeInit();
   }

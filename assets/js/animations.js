@@ -2,21 +2,42 @@
 (function(){
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // On-scroll reveal
-  const els = document.querySelectorAll('.reveal,[data-animate]');
-  if (!reduceMotion && 'IntersectionObserver' in window) {
-    const io = new IntersectionObserver((entries)=>{
-      entries.forEach(e=>{
-        if (e.isIntersecting) {
-          e.target.classList.add('in');
-          io.unobserve(e.target);
+  // On-scroll reveal (con soporte para elementos insertados dinámicamente)
+  const supportsIO = !reduceMotion && 'IntersectionObserver' in window;
+  let io;
+
+  function initReveal(){
+    if (supportsIO) {
+      io = new IntersectionObserver((entries)=>{
+        entries.forEach(e=>{
+          if (e.isIntersecting) {
+            e.target.classList.add('in');
+            io.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.12, rootMargin: '0px 0px -10% 0px' });
+    }
+    observeEls();
+    // Observar futuras inserciones en el DOM para aplicar reveal
+    const mo = new MutationObserver(()=> observeEls());
+    mo.observe(document.body, { childList: true, subtree: true });
+  }
+
+  function observeEls(){
+    const els = document.querySelectorAll('.reveal,[data-animate]');
+    if (supportsIO) {
+      els.forEach(el=>{
+        if (!el.dataset.observed) {
+          io.observe(el);
+          el.dataset.observed = '1';
         }
       });
-    }, { threshold: 0.12, rootMargin: '0px 0px -10% 0px' });
-    els.forEach(el=> io.observe(el));
-  } else {
-    els.forEach(el=> el.classList.add('in'));
+    } else {
+      els.forEach(el=> el.classList.add('in'));
+    }
   }
+
+  initReveal();
 
   // Tilt leve en tarjetas
   if (!reduceMotion) {

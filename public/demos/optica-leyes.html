@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Leyes de reflexión y refracción — Demo interactiva</title>
+  <meta name="description" content="Demostración interactiva de las leyes de la reflexión y la refracción (Ley de Snell), con visualización, ángulo crítico y reflexión interna total." />
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+</head>
+<body>
+  <main class="container">
+    <section class="reveal" aria-labelledby="t">
+      <div class="section-head">
+        <h1 id="t">Leyes de reflexión y refracción (Óptica)</h1>
+        <a class="btn secondary" href="../../projects.html">← Volver a proyectos</a>
+      </div>
+      <p class="lead">
+        Explora cómo un rayo de luz cambia de dirección al pasar entre dos medios con índices de refracción distintos
+        usando la <strong>Ley de Snell</strong> y cómo aparece la <strong>reflexión interna total</strong>.
+      </p>
+    </section>
+
+    <section class="reveal" aria-labelledby="sim">
+      <h2 id="sim">Simulador</h2>
+      <div class="card" style="padding:1rem; display:grid; gap:1rem;">
+        <div style="display:grid; gap:.75rem; grid-template-columns:repeat(auto-fit, minmax(220px,1fr));">
+          <label>
+            <span>Índice n₁ (medio superior)</span>
+            <input id="n1" type="number" step="0.01" min="1" value="1.50" style="width:100%" />
+          </label>
+          <label>
+            <span>Índice n₂ (medio inferior)</span>
+            <input id="n2" type="number" step="0.01" min="1" value="1.00" style="width:100%" />
+          </label>
+          <label>
+            <span>Ángulo de incidencia θ₁ (°) respecto a la normal</span>
+            <input id="theta" type="range" min="0" max="89" value="30" />
+          </label>
+          <div class="badge" id="readout">—</div>
+        </div>
+        <canvas id="scene" width="900" height="480" style="width:100%; height:auto; border:1px solid var(--border); border-radius:10px; background:var(--bg);"></canvas>
+        <div class="muted" style="color:var(--muted)">
+          Consejo: prueba con n₁ &gt; n₂ y aumenta θ₁ hasta superar el ángulo crítico para observar <em>reflexión interna total</em>.
+        </div>
+      </div>
+    </section>
+
+    <section class="reveal" aria-labelledby="teoria">
+      <h2 id="teoria">Fundamento teórico</h2>
+      <div class="card">
+        <p>
+          La <strong>Ley de Snell</strong> establece que n₁·sin(θ₁) = n₂·sin(θ₂), donde θ₁ es el ángulo de incidencia y θ₂ el de refracción,
+          ambos medidos respecto a la normal a la superficie. La reflexión especular cumple θ<sub>r</sub> = θ₁.
+        </p>
+        <p>
+          Si <strong>n₁ &gt; n₂</strong>, existe un <strong>ángulo crítico</strong> θ<sub>c</sub> = arcsin(n₂/n₁). Cuando θ₁ ≥ θ<sub>c</sub>, no hay rayos transmitidos y ocurre
+          <strong>reflexión interna total</strong> (RIT): toda la energía se refleja en el medio de mayor índice.
+        </p>
+        <ul>
+          <li><strong>Conservación del plano de incidencia</strong>: los rayos incidente, reflejado y refractado están en el mismo plano.</li>
+          <li><strong>Continuidad tangencial</strong>: explica la relación de Snell a partir de la fase de la onda.</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <script>
+  (function(){
+    const $ = s => document.querySelector(s);
+    const canvas = $('#scene');
+    const ctx = canvas.getContext('2d');
+    const n1El = $('#n1');
+    const n2El = $('#n2');
+    const thEl = $('#theta');
+    const readout = $('#readout');
+
+    const W = canvas.width, H = canvas.height;
+    const y0 = Math.round(H/2); // interfaz horizontal
+    const cx = Math.round(W*0.5); // punto de incidencia x
+
+    function deg2rad(d){ return d*Math.PI/180; }
+    function rad2deg(r){ return r*180/Math.PI; }
+
+    function draw(){
+      const n1 = Math.max(1, parseFloat(n1El.value)||1);
+      const n2 = Math.max(1, parseFloat(n2El.value)||1);
+      const theta1 = Math.min(89, Math.max(0, parseFloat(thEl.value)||0)); // respecto a la normal
+
+      ctx.clearRect(0,0,W,H);
+
+      // Fondos de medios
+      ctx.fillStyle = 'rgba(93,211,255,0.06)';
+      ctx.fillRect(0,0,W,y0);
+      ctx.fillStyle = 'rgba(155,140,255,0.06)';
+      ctx.fillRect(0,y0,W,H-y0);
+
+      // Interfaz
+      ctx.strokeStyle = 'var(--border)';
+      ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(0,y0); ctx.lineTo(W,y0); ctx.stroke();
+
+      // Normal en el punto de incidencia
+      ctx.setLineDash([6,6]);
+      ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+      ctx.beginPath(); ctx.moveTo(cx,0); ctx.lineTo(cx,H); ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Cálculos
+      const th1 = deg2rad(theta1);
+      const sin2 = (n1/n2) * Math.sin(th1);
+      let tir = false, theta2 = 0, thetaCrit = NaN;
+      if (n1 > n2) thetaCrit = Math.asin(Math.min(1, n2/n1));
+      if (Math.abs(sin2) > 1) { tir = true; } else { theta2 = Math.asin(sin2); }
+
+      // Vectores unitarios a partir de normal (eje +y hacia abajo). Para dibujar usaremos geometría relativa.
+      // Incidente: en el medio superior (arriba). Si la normal es +y, el rayo incidente forma th1 respecto a la vertical.
+      // Direcciones: usamos un pequeño offset para dar longitud visual.
+      const len = Math.min(W,H)*0.45;
+
+      // Puntos de inicio/fin
+      function lineAt(angleRad, upward){
+        // angleRad medido desde la normal (vertical). upward indica si se dibuja hacia arriba (true) o abajo (false)
+        const sign = upward ? -1 : 1; // hacia arriba negativo en y
+        const dx = Math.sin(angleRad);
+        const dy = Math.cos(angleRad)*sign;
+        return { x: cx + dx*len, y: y0 + dy*len };
+      }
+
+      // Rayo incidente (arriba)
+      const pInc = lineAt(th1, true);
+      drawArrow(pInc.x, pInc.y, cx, y0, '#5dd3ff');
+
+      // Rayo reflejado (arriba), mismo ángulo
+      const pRef = lineAt(th1, true); // simétrico respecto a la normal desde el punto, pero hacia arriba
+      drawArrow(cx, y0, pRef.x, pRef.y, '#9b8cff');
+
+      // Rayo refractado (abajo) si no hay TIR
+      if (!tir) {
+        const pRefr = lineAt(theta2, false);
+        drawArrow(cx, y0, pRefr.x, pRefr.y, '#2ecc71');
+      } else {
+        // Indicador de TIR en el medio 1
+        ctx.fillStyle = 'rgba(255,107,107,.5)';
+        ctx.beginPath(); ctx.arc(cx, y0, 8, 0, Math.PI*2); ctx.fill();
+      }
+
+      // Etiquetas
+      ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text') || '#e6e8ef';
+      ctx.font = '14px system-ui, Segoe UI, Roboto, Arial';
+      ctx.fillText('Medio 1 (n₁='+n1.toFixed(2)+')', 12, 20);
+      ctx.fillText('Medio 2 (n₂='+n2.toFixed(2)+')', 12, H-12);
+
+      // Lecturas numéricas
+      const th2Deg = tir ? NaN : rad2deg(theta2);
+      const thCritDeg = isNaN(thetaCrit) ? NaN : rad2deg(thetaCrit);
+      readout.textContent = `θ₁=${theta1.toFixed(1)}°  |  θ₂=${isNaN(th2Deg)?'—':th2Deg.toFixed(1)+'°'}  |  θc=${isNaN(thCritDeg)?'—':thCritDeg.toFixed(1)+'°'}  |  ${tir?'RIT: Sí':'RIT: No'}`;
+    }
+
+    function drawArrow(x1,y1,x2,y2,color){
+      const a = Math.atan2(y2-y1, x2-x1);
+      const head = 9;
+      ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(x2, y2);
+      ctx.lineTo(x2 - head*Math.cos(a - Math.PI/6), y2 - head*Math.sin(a - Math.PI/6));
+      ctx.lineTo(x2 - head*Math.cos(a + Math.PI/6), y2 - head*Math.sin(a + Math.PI/6));
+      ctx.closePath(); ctx.fill();
+    }
+
+    function onInput(){ draw(); }
+    n1El.addEventListener('input', onInput);
+    n2El.addEventListener('input', onInput);
+    thEl.addEventListener('input', onInput);
+
+    // Primer render
+    draw();
+  })();
+  </script>
+
+  <script src="../../assets/js/animations.js" defer></script>
+</body>
+</html>

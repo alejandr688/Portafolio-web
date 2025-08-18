@@ -63,6 +63,16 @@ const PROJECTS_SEED = [
     "metrics": { "lighthouse": 98, "views": 1 },
     "links": { "github": "#", "demo": "#", "video": "#" },
     "images": ["assets/img/placeholder.svg"]
+  },
+  {
+    "title": "Leyes de reflexión y refracción (Óptica)",
+    "category": "Física/Óptica",
+    "description": "Demostración interactiva de las leyes de la reflexión y la refracción (Ley de Snell). Incluye visualización de rayos, cálculo de ángulo crítico y reflexión interna total para distintos índices de refracción.",
+    "tags": ["Óptica", "Física", "Snell", "Simulación", "JavaScript"],
+    "year": 2025,
+    "metrics": { "casos": 120, "tirs_detectadas": 36 },
+    "links": { "github": "#", "demo": "public/demos/optica-leyes.html", "video": "#" },
+    "images": ["assets/img/placeholder.svg"]
   }
 ];
 
