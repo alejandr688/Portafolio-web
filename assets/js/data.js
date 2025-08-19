@@ -72,7 +72,7 @@ const PROJECTS_SEED = [
     "year": 2025,
     "metrics": { "casos": 120, "tirs_detectadas": 36 },
     "links": { "github": "#", "demo": "public/demos/optica-leyes.html", "video": "#" },
-    "images": ["assets/img/placeholder.svg"]
+    "images": ["assets/img/Esquemapractica1.webp"]
   }
 ];
 

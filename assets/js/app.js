@@ -28,7 +28,10 @@
           <span class="dot" aria-hidden="true"></span>
           <span>Alejandro Pérez Romero</span>
         </a>
-        <nav class="nav" aria-label="Secciones">
+        <button class="nav-toggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="main-nav">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+        <nav class="nav" id="main-nav" aria-label="Secciones">
           ${navLink('index.html','Inicio')}
           ${navLink('about.html','Sobre mí')}
           ${navLink('skills.html','Habilidades')}
@@ -57,6 +60,16 @@
       </div>
     `;
     document.body.append(footer);
+
+    // Nav toggle
+    const navToggle = $('.nav-toggle');
+    const navMenu = $('#main-nav');
+    navToggle.addEventListener('click', () => {
+      const isExpanded = navToggle.getAttribute('aria-expanded') === 'true';
+      navToggle.setAttribute('aria-expanded', !isExpanded);
+      navMenu.classList.toggle('open');
+      document.body.classList.toggle('nav-open');
+    });
 
     // Active link
     const path = location.pathname.split('/').pop() || 'index.html';
