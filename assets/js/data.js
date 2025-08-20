@@ -5,73 +5,18 @@
 
 const PROJECTS_SEED = [
   {
-    "title": "Espectroscopio casero con rejilla",
-    "category": "Física/Óptica",
-    "description": "Construcción y calibración de un espectroscopio con rejilla de difracción. Captura con cámara y análisis espectral en Python.",
-    "tags": ["Python", "Óptica", "Seaborn", "Numpy"],
-    "year": 2023,
-    "metrics": { "rmse": 0.012, "views": 1240 },
-    "links": { "github": "#", "demo": "#", "video": "#" },
-    "images": ["assets/img/placeholder.svg"]
-  },
-  {
-    "title": "Fotografía Schlieren con IA",
-    "category": "Física/Óptica",
-    "description": "Setup de Schlieren de bajo costo para visualizar gradientes térmicos. Segmentación asistida por visión por computadora.",
-    "tags": ["Computer Vision", "OpenCV", "Python", "Óptica"],
-    "year": 2024,
-    "metrics": { "accuracy": 0.91, "views": 980 },
-    "links": { "github": "#", "demo": "#", "video": "#" },
-    "images": ["assets/img/placeholder.svg"]
-  },
-  {
-    "title": "Kaggle: Global Student Perceptions of ChatGPT",
-    "category": "Data Science",
-    "description": "EDA y modelos para entender percepciones estudiantiles sobre ChatGPT. Visualizaciones, ingeniería de variables y evaluación.",
-    "tags": ["Pandas", "Seaborn", "scikit-learn", "Python"],
-    "year": 2023,
-    "metrics": { "roc_auc": 0.84, "views": 2100 },
-    "links": { "github": "#", "demo": "#", "video": "#" },
-    "images": ["assets/img/placeholder.svg"]
-  },
-  {
-    "title": "Contador de pasos con acelerómetro",
-    "category": "Electrónica/IoT",
-    "description": "Pedometer con Arduino + MPU6050. Filtro y conteo de eventos con umbrales adaptativos.",
-    "tags": ["Arduino", "Señales", "C", "MPU6050"],
-    "year": 2022,
-    "metrics": { "accuracy": 0.93, "views": 640 },
-    "links": { "github": "#", "demo": "#", "video": "#" },
-    "images": ["assets/img/placeholder.svg"]
-  },
-  {
-    "title": "Medidor UV con alertas de voz",
-    "category": "Electrónica/IoT",
-    "description": "Sensor UV con notificaciones de voz y registro de datos ambientales. Umbrales configurables.",
-    "tags": ["IoT", "Sensores", "TTS", "Microcontroladores"],
-    "year": 2022,
-    "metrics": { "max_uv_index": 9.2, "views": 520 },
-    "links": { "github": "#", "demo": "#", "video": "#" },
-    "images": ["assets/img/placeholder.svg"]
-  },
-  {
-    "title": "Portfolio Web",
-    "category": "Web",
-    "description": "Este sitio: HTML/CSS/JS vanilla, accesible, rápido y responsivo.",
-    "tags": ["HTML", "CSS", "JavaScript"],
-    "year": 2025,
-    "metrics": { "lighthouse": 98, "views": 1 },
-    "links": { "github": "#", "demo": "#", "video": "#" },
-    "images": ["assets/img/placeholder.svg"]
-  },
-  {
     "title": "Leyes de reflexión y refracción (Óptica)",
     "category": "Física/Óptica",
     "description": "Demostración interactiva de las leyes de la reflexión y la refracción (Ley de Snell). Incluye visualización de rayos, cálculo de ángulo crítico y reflexión interna total para distintos índices de refracción.",
     "tags": ["Óptica", "Física", "Snell", "Simulación", "JavaScript"],
     "year": 2025,
     "metrics": { "casos": 120, "tirs_detectadas": 36 },
-    "links": { "github": "#", "demo": "public/demos/optica-leyes.html", "video": "#" },
+    "links": { 
+      "report": "public/docs/reporte-optica.pdf", 
+      "sim": "public/demos/optica-leyes.html",
+      "github": "#",
+      "video": "#"
+    },
     "images": ["assets/img/Esquemapractica1.webp"]
   }
 ];

@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const deg2rad = (d) => (d * Math.PI) / 180;
   const rad2deg = (r) => (r * 180) / Math.PI;
   const clamp = (x, a, b) => Math.min(Math.max(x, a), b);
+  const getCssVar = (name) => getComputedStyle(document.body).getPropertyValue(name).trim();
 
   const MATERIALS = [
     { key: "air", name: "Aire", n: 1.0003 },
@@ -18,13 +19,6 @@ document.addEventListener('DOMContentLoaded', () => {
     { key: "custom", name: "Personalizado…", n: NaN },
   ];
 
-  const DEFAULT_COLORS = {
-    incident: "#00e5ff",
-    reflected: "#b399ff",
-    transmitted: "#34d399",
-    interface: "#94a3b8",
-  };
-
   // --- Referencias al DOM ---
   const canvas = $('#scene');
   const ctx = canvas.getContext('2d');
@@ -37,10 +31,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const nTopCustomEl = $('#nTopCustom'), nBotCustomEl = $('#nBotCustom');
   const fromTopToggle = $('#fromTopToggle');
   const angleDegEl = $('#angleDeg'), angleDegNumEl = $('#angleDegNum');
-  const colorIncidentEl = $('#colorIncident'), colorReflectedEl = $('#colorReflected'), colorTransmittedEl = $('#colorTransmitted');
+  const angleDegMobileEl = $('#angleDegMobile'), angleDegNumMobileEl = $('#angleDegNumMobile');
   const rayWidthEl = $('#rayWidth'), rayWidthValEl = $('#rayWidthVal');
   const showProtractorEl = $('#showProtractor'), showLabelsEl = $('#showLabels'), showArcsEl = $('#showArcs');
   const saveBtn = $('#saveBtn'), resetBtn = $('#resetBtn');
+  const colorIncidentEl = $('#colorIncident'), colorReflectedEl = $('#colorReflected'), colorTransmittedEl = $('#colorTransmitted');
   
   // Lecturas
   const resThI = $('#resThI'), resThR = $('#resThR'), resThT = $('#resThT');
@@ -61,9 +56,11 @@ document.addEventListener('DOMContentLoaded', () => {
       showProtractor: true,
       showLabels: true,
       showArcs: true,
-      colors: { ...DEFAULT_COLORS },
       rayWidth: 2,
       pointX: W * 0.5,
+      colorIncident: getCssVar('--c-incident'),
+      colorReflected: getCssVar('--c-reflected'),
+      colorTransmitted: getCssVar('--c-transmitted'),
     };
     updateUIFromState();
     draw();
@@ -72,8 +69,17 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- Lógica principal de dibujo ---
   function draw() {
     const {
-      angleDeg, fromTop, colors, showProtractor, showLabels, showArcs, rayWidth, pointX
+      angleDeg, fromTop, showProtractor, showLabels, showArcs, rayWidth, pointX
     } = state;
+
+    const colors = {
+        incident: state.colorIncident,
+        reflected: state.colorReflected,
+        transmitted: state.colorTransmitted,
+        interface: getCssVar('--c-interface'),
+        label: getCssVar('--c-label'),
+        protractor: getCssVar('--c-protractor'),
+    };
 
     const nTop = state.topMat === 'custom' ? state.nTopCustom : MATERIALS.find(m => m.key === state.topMat).n;
     const nBot = state.botMat === 'custom' ? state.nBotCustom : MATERIALS.find(m => m.key === state.botMat).n;
@@ -101,19 +107,19 @@ document.addEventListener('DOMContentLoaded', () => {
     ctx.clearRect(0, 0, W, H);
 
     // Fondos
-    ctx.fillStyle = "rgba(93,211,255,0.06)";
+    ctx.fillStyle = colors.interface + '10';
     ctx.fillRect(0, 0, W, yInterface);
-    ctx.fillStyle = "rgba(155,140,255,0.06)";
+    ctx.fillStyle = colors.interface + '1A';
     ctx.fillRect(0, yInterface, W, H - yInterface);
 
     // Interfaz y normal
     ctx.strokeStyle = colors.interface; ctx.lineWidth = 1.25;
     ctx.beginPath(); ctx.moveTo(0, yInterface); ctx.lineTo(W, yInterface); ctx.stroke();
-    ctx.setLineDash([6, 6]); ctx.strokeStyle = "rgba(255,255,255,0.35)";
+    ctx.setLineDash([6, 6]); ctx.strokeStyle = colors.protractor;
     ctx.beginPath(); ctx.moveTo(pointX, 0); ctx.lineTo(pointX, H); ctx.stroke();
     ctx.setLineDash([]);
 
-    if (showProtractor) drawProtractor(ctx, pointX, yInterface, 110);
+    if (showProtractor) drawProtractor(ctx, pointX, yInterface, 110, colors);
 
     // Dibujo de rayos
     const len = Math.min(W, H) * 0.46;
@@ -121,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const sideOther = fromTop ? "bottom" : "top";
 
     const dI = dir(th1, sideIncident);
-    const startI = { x: pointX - dI.dx * len, y: yInterface - dI.dy * len };
+    const startI = { x: pointX - dI.dx * len, y: yInterface + dI.dy * len };
     arrow(startI.x, startI.y, pointX, yInterface, colors.incident, rayWidth);
 
     const dR = dir(th1, sideIncident);
@@ -150,7 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (showLabels) {
-      ctx.fillStyle = '#e5e7eb'; ctx.font = "14px ui-sans-serif, system-ui";
+      ctx.fillStyle = colors.label; ctx.font = "16px ui-sans-serif, system-ui";
       ctx.fillText(`Medio superior (n=${nTop.toFixed(3)})`, 12, 22);
       ctx.fillText(`Medio inferior (n=${nBot.toFixed(3)})`, 12, H - 12);
       ctx.fillText("Incidente", startI.x + 8, startI.y + 12);
@@ -182,9 +188,9 @@ document.addEventListener('DOMContentLoaded', () => {
     ctx.closePath(); ctx.fill();
   }
 
-  function drawProtractor(ctx, cx, cy, r) {
+  function drawProtractor(ctx, cx, cy, r, colors) {
     ctx.save();
-    ctx.strokeStyle = "rgba(255,255,255,0.25)"; ctx.fillStyle = "rgba(255,255,255,0.45)"; ctx.lineWidth = 1;
+    ctx.strokeStyle = colors.protractor; ctx.fillStyle = colors.label; ctx.lineWidth = 1;
     const drawHalf = (sign) => {
       ctx.beginPath(); ctx.arc(cx, cy, r, (sign === -1 ? Math.PI : 0), (sign === -1 ? 2 * Math.PI : Math.PI), true); ctx.stroke();
       for (let d = 0; d <= 90; d += 5) {
@@ -210,7 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ctx.beginPath(); ctx.arc(cx, cy, r, base, base + delta, delta < 0); ctx.stroke();
     const mid = base + delta / 2;
     const tx = cx + Math.cos(mid) * (r + 14), ty = cy + Math.sin(mid) * (r + 14);
-    ctx.fillStyle = color; ctx.font = "12px ui-sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.fillStyle = color; ctx.font = '16px Arial'; ctx.textAlign = "center"; ctx.textBaseline = "middle";
     ctx.fillText(`${Math.abs(rad2deg(delta)).toFixed(1)}°`, tx, ty);
     ctx.restore();
   }
@@ -228,10 +234,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
     angleDegEl.value = state.angleDeg;
     angleDegNumEl.value = state.angleDeg;
-    
-    colorIncidentEl.value = state.colors.incident;
-    colorReflectedEl.value = state.colors.reflected;
-    colorTransmittedEl.value = state.colors.transmitted;
+    angleDegMobileEl.value = state.angleDeg;
+    angleDegNumMobileEl.value = state.angleDeg;
     
     rayWidthEl.value = state.rayWidth;
     rayWidthValEl.textContent = state.rayWidth;
@@ -239,6 +243,10 @@ document.addEventListener('DOMContentLoaded', () => {
     showProtractorEl.checked = state.showProtractor;
     showLabelsEl.checked = state.showLabels;
     showArcsEl.checked = state.showArcs;
+
+    colorIncidentEl.value = state.colorIncident;
+    colorReflectedEl.value = state.colorReflected;
+    colorTransmittedEl.value = state.colorTransmitted;
   }
 
   function updateReadout(th1, th2, thCrit, thBrew, R, T, TIR) {
@@ -277,15 +285,15 @@ document.addEventListener('DOMContentLoaded', () => {
         draw();
       }
     });
-    angleDegEl.addEventListener('input', e => { state.angleDeg = parseFloat(e.target.value); updateUIFromState(); draw(); });
-    angleDegNumEl.addEventListener('input', e => { state.angleDeg = parseFloat(e.target.value); updateUIFromState(); draw(); });
+    const angleInputs = [angleDegEl, angleDegNumEl, angleDegMobileEl, angleDegNumMobileEl];
+    const handleAngleChange = (e) => {
+      state.angleDeg = parseFloat(e.target.value);
+      updateUIFromState();
+      draw();
+    };
+    angleInputs.forEach(el => el.addEventListener('input', handleAngleChange));
     rayWidthEl.addEventListener('input', e => { state.rayWidth = parseFloat(e.target.value); updateUIFromState(); draw(); });
-    [colorIncidentEl, colorReflectedEl, colorTransmittedEl].forEach(el => {
-      el.addEventListener('input', e => {
-        state.colors[el.id.replace('color', '').toLowerCase()] = e.target.value;
-        draw();
-      });
-    });
+    
     [showProtractorEl, showLabelsEl, showArcsEl].forEach(el => {
       el.addEventListener('change', e => {
         state[el.id.replace('El', '')] = e.target.checked;
@@ -293,15 +301,40 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
+    // Colores
+    [colorIncidentEl, colorReflectedEl, colorTransmittedEl].forEach(el => {
+      el.addEventListener('input', e => {
+        state[el.id] = e.target.value;
+        draw();
+      });
+    });
+
     // Acciones
     resetBtn.addEventListener('click', resetState);
-    saveBtn.addEventListener('click', () => {
-      const url = canvas.toDataURL('image/png');
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `optica_sim.png`;
-      a.click();
-    });
+    saveBtn.addEventListener('click', ()=>{
+    const url = canvas.toDataURL('image/png');
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `simulacion-optica-${Date.now()}.png`;
+    a.click();
+  });
+
+  // Theme toggle
+  const themeToggleBtn = document.getElementById('themeToggleBtn');
+  function setTheme(theme) {
+    document.body.setAttribute('data-theme', theme);
+    localStorage.setItem('optic_theme', theme);
+    draw();
+  }
+
+  themeToggleBtn.addEventListener('click', () => {
+    const currentTheme = document.body.getAttribute('data-theme') || 'light';
+    setTheme(currentTheme === 'dark' ? 'light' : 'dark');
+  });
+
+  // Initial theme
+  const savedTheme = localStorage.getItem('optic_theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  setTheme(savedTheme);
 
     // Arrastrar punto de incidencia
     let dragging = false;
@@ -313,6 +346,17 @@ document.addEventListener('DOMContentLoaded', () => {
       state.pointX = clamp(((e.clientX - rect.left) / rect.width) * W, 30, W - 30);
       draw();
     });
+    // Soporte táctil para arrastrar el punto de incidencia
+    canvas.addEventListener('touchstart', () => { dragging = true; }, { passive: true });
+    window.addEventListener('touchend', () => { dragging = false; }, { passive: true });
+    window.addEventListener('touchmove', (e) => {
+      if (!dragging) return;
+      const t = e.touches && e.touches[0];
+      if (!t) return;
+      const rect = canvas.getBoundingClientRect();
+      state.pointX = clamp(((t.clientX - rect.left) / rect.width) * W, 30, W - 30);
+      draw();
+    }, { passive: true });
   }
 
   // --- Inicialización ---

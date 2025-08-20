@@ -18,14 +18,18 @@
       de Fresnel (R/T). Puedes <b>arrastrar</b> el punto de incidencia sobre la interfaz y <b>guardar</b> la imagen.
     </p>
 
-    <div style="text-align: center; margin-bottom: 2rem;">
-      <img src="../../assets/img/Esquemapractica1.webp" alt="Esquema de la ley de Snell" style="max-width: 100%; height: auto; border-radius: 8px;">
-    </div>
 
     <div class="simulator-layout">
       <!-- Canvas (ahora a la izquierda) -->
       <div class="canvas-container">
         <canvas id="scene"></canvas>
+        <div class="control-card angle-control-mobile" style="margin-top: 1rem;">
+          <div class="form-group">
+            <label for="angleDegMobile">Ángulo de incidencia θᵢ (°)</label>
+            <input type="range" id="angleDegMobile" min="0" max="89.9" step="0.1">
+            <input type="number" id="angleDegNumMobile" min="0" max="89.9" step="0.1">
+          </div>
+        </div>
         <p style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.5rem;">
           Consejo: prueba con n₁ &gt; n₂ y aumenta θᵢ hasta superar θc para observar <em>reflexión interna total</em>.
           Arrastra el punto de incidencia a lo largo de la interfaz.
@@ -41,6 +45,7 @@
           <div class="action-buttons">
             <button id="saveBtn" class="btn">Guardar PNG</button>
             <button id="resetBtn" class="btn">Reset</button>
+            <button id="themeToggleBtn" class="btn" aria-label="Cambiar tema">🌓</button>
           </div>
         </div>
       </div>
@@ -72,7 +77,7 @@
       <!-- Columna 2: ángulo y estilo -->
       <div class="control-card">
         <h2>Rayo y Ángulos</h2>
-        <div class="form-group">
+        <div class="form-group angle-control-desktop">
           <label for="angleDeg">Ángulo de incidencia θᵢ (°)</label>
           <input type="range" id="angleDeg" min="0" max="89.9" step="0.1">
           <input type="number" id="angleDegNum" min="0" max="89.9" step="0.1">

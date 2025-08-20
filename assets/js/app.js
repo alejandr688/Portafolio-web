@@ -15,23 +15,29 @@
     bindSectionIndicator();
     // bindAnchorScrollSpy();
     bindCommonUI();
+    bindRotatingTexts();
     routeInit();
   }
 
-  // Navbar + Footer
+  // Sidebar + Footer + App Shell
   function injectLayout(){
-    const navWrap = document.createElement('div');
-    navWrap.className = 'navbar-wrap';
-    navWrap.innerHTML = `
-      <div class="navbar container" role="navigation" aria-label="Principal">
-        <a class="brand" href="./index.html" aria-label="Alejandro Pérez Romero - Inicio">
-          <span class="dot" aria-hidden="true"></span>
-          <span>Alejandro Pérez Romero</span>
-        </a>
-        <button class="nav-toggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="main-nav">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-        </button>
-        <nav class="nav" id="main-nav" aria-label="Secciones">
+    // Construye el shell con sidebar
+    const shell = document.createElement('div');
+    shell.className = 'app-shell';
+    shell.innerHTML = `
+      <aside class="sidebar" id="sidebar" role="navigation" aria-label="Principal">
+        <div class="sidebar-header">
+          <a class="brand" href="./index.html" aria-label="Alejandro Pérez Romero - Inicio">
+            <span class="dot" aria-hidden="true"></span>
+            <span>Alejandro Pérez Romero</span>
+          </a>
+          <div class="sidebar-controls" style="display:flex; gap:.35rem; align-items:center;">
+            <button class="theme-toggle" title="Tema claro/oscuro" aria-label="Cambiar tema">🌓</button>
+            <button class="desktop-collapse" aria-label="Ocultar menú" aria-controls="sidebar" aria-expanded="true">⮜</button>
+            <button class="sidebar-toggle" aria-label="Cerrar menú" aria-expanded="true" aria-controls="sidebar">✕</button>
+          </div>
+        </div>
+        <nav class="sidebar-nav" aria-label="Secciones">
           ${navLink('index.html','Inicio')}
           ${navLink('about.html','Sobre mí')}
           ${navLink('skills.html','Habilidades')}
@@ -43,49 +49,110 @@
           ${navLink('resume.html','CV')}
           ${navLink('contact.html','Contacto')}
         </nav>
-        <div class="nav-actions">
+        <div class="sidebar-footer">
           <span class="badge section-indicator" id="sectionIndicator" aria-live="polite"></span>
-          <button class="theme-toggle" title="Tema claro/oscuro" aria-label="Cambiar tema">🌓</button>
-          <button class="scroll-top" title="Subir" aria-label="Volver arriba" style="display:none">↑</button>
         </div>
-      </div>
-      <div class="scroll-progress" aria-hidden="true"></div>
-    `;
-    document.body.prepend(navWrap);
-
+      </aside>
+      <div class="overlay" id="overlay" tabindex="-1" aria-hidden="true"></div>
+      <div class="app-content" id="appContent">
+        <header class="app-header">
+          <a class="brand" href="./index.html" aria-label="Alejandro Pérez Romero - Inicio">
+            <span class="dot"></span>
+            <span>Alejandro Pérez Romero</span>
+          </a>
+          <div class="header-actions">
+            <button class="theme-toggle" title="Tema claro/oscuro" aria-label="Cambiar tema">🌓</button>
+            <button class="sidebar-trigger" aria-label="Abrir menú" aria-expanded="false" aria-controls="sidebar">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            </button>
+          </div>
+        </header>
+        <div class="scroll-progress" aria-hidden="true"></div>
+        <button class="scroll-top" title="Subir" aria-label="Volver arriba" style="display:none">↑</button>
+      </div>`;
+    // Insertar shell y mover contenido existente dentro de app-content
+    const existing = Array.from(document.body.children);
+    document.body.prepend(shell);
+    const contentHost = shell.querySelector('#appContent');
+    existing.forEach(el => {
+      if (el.matches('script')) return;
+      if (el === shell) return;
+      contentHost.append(el);
+    });
+    // Footer dentro del contenido
     const footer = document.createElement('footer');
     footer.innerHTML = `
       <div class="container">
         <div>© ${new Date().getFullYear()} Alejandro Pérez Romero • Portafolio</div>
-      </div>
-    `;
-    document.body.append(footer);
-
-    // Nav toggle
-    const navToggle = $('.nav-toggle');
-    const navMenu = $('#main-nav');
-    navToggle.addEventListener('click', () => {
-      const isExpanded = navToggle.getAttribute('aria-expanded') === 'true';
-      navToggle.setAttribute('aria-expanded', !isExpanded);
-      navMenu.classList.toggle('open');
-      document.body.classList.toggle('nav-open');
-    });
-
-    // Active link
-    const path = location.pathname.split('/').pop() || 'index.html';
-    $$('.nav a').forEach(a=>{ if(a.getAttribute('href')===path) a.classList.add('active'); });
-
-    // Scroll-to-top
-    const topBtn = $('.scroll-top');
-    window.addEventListener('scroll', ()=>{
-      topBtn.style.display = (window.scrollY > 500) ? 'inline-flex' : 'none';
-    });
-    topBtn.addEventListener('click', ()=> window.scrollTo({top:0, behavior:'smooth'}));
-
-    // Toast area
+      </div>`;
+    contentHost.append(footer);
+    // Área de toasts (flotante)
     const ta = document.createElement('div');
     ta.className = 'toast-area';
     document.body.append(ta);
+    // Dock (escritorio) para mostrar nombre y reabrir la sidebar cuando esté colapsada
+    const dock = document.createElement('div');
+    dock.className = 'sidebar-dock';
+    dock.id = 'sidebarDock';
+    dock.setAttribute('aria-hidden','true');
+    dock.innerHTML = `
+      <a class="brand" href="./index.html" aria-label="Alejandro Pérez Romero - Inicio">
+        <span class="dot" aria-hidden="true"></span>
+        <span>Alejandro Pérez Romero</span>
+      </a>
+      <button class="dock-toggle" aria-label="Mostrar menú" aria-controls="sidebar" aria-expanded="false">☰</button>
+    `;
+    document.body.append(dock);
+    // Toggle sidebar + overlay
+    const trigger = document.querySelector('.sidebar-trigger');
+    const closeBtn = shell.querySelector('.sidebar-toggle');
+    const desktopBtn = shell.querySelector('.desktop-collapse');
+    const overlay = shell.querySelector('#overlay');
+    function setOpen(open){
+      document.body.classList.toggle('nav-open', !!open);
+      trigger && trigger.setAttribute('aria-expanded', open ? 'true' : 'false');
+      closeBtn && closeBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if (overlay) {
+        if (open) overlay.removeAttribute('aria-hidden');
+        else overlay.setAttribute('aria-hidden','true');
+      }
+    }
+    trigger && trigger.addEventListener('click', ()=> setOpen(!document.body.classList.contains('nav-open')));
+    closeBtn && closeBtn.addEventListener('click', ()=> setOpen(false));
+    overlay && overlay.addEventListener('click', ()=> setOpen(false));
+    document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') setOpen(false); });
+
+    // Colapso en escritorio (no móvil)
+    const mqlDesktop = window.matchMedia('(min-width: 901px)');
+    const dockToggle = dock.querySelector('.dock-toggle');
+    function setDesktopCollapsed(collapsed){
+      if(!mqlDesktop.matches){
+        document.body.classList.remove('sidebar-collapsed');
+        desktopBtn && desktopBtn.setAttribute('aria-expanded','true');
+        dockToggle && dockToggle.setAttribute('aria-expanded','false');
+        dock && dock.setAttribute('aria-hidden','true');
+        return;
+      }
+      document.body.classList.toggle('sidebar-collapsed', !!collapsed);
+      const expanded = !collapsed;
+      desktopBtn && desktopBtn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+      dockToggle && dockToggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+      dock && dock.setAttribute('aria-hidden', expanded ? 'true' : 'false');
+    }
+    desktopBtn && desktopBtn.addEventListener('click', ()=> setDesktopCollapsed(true));
+    dockToggle && dockToggle.addEventListener('click', ()=> setDesktopCollapsed(false));
+    try { mqlDesktop.addEventListener('change', ()=> setDesktopCollapsed(false)); } catch{}
+    // Estado inicial
+    setDesktopCollapsed(false);
+    // Enlace activo
+    const path = location.pathname.split('/').pop() || 'index.html';
+    $$('.sidebar-nav a').forEach(a=>{ if(a.getAttribute('href')===path) a.classList.add('active'); });
+    // Scroll-to-top
+    const topBtn = shell.querySelector('.scroll-top');
+    window.addEventListener('scroll', ()=>{
+      if(topBtn) topBtn.style.display = (window.scrollY > 500) ? 'inline-flex' : 'none';
+    }, { passive: true });
+    topBtn && topBtn.addEventListener('click', ()=> window.scrollTo({top:0, behavior:'smooth'}));
   }
 
   function navLink(href, label){
@@ -112,25 +179,37 @@
   // Tema claro/oscuro
   function bindTheme(){
     const key = 'apr_theme';
-    const btn = $('.theme-toggle');
-    if(!btn) return;
+    const buttons = $$('.theme-toggle');
+    if(!buttons.length) return;
+
     const mql = window.matchMedia('(prefers-color-scheme: dark)');
     const saved = localStorage.getItem(key);
     const existing = document.documentElement.getAttribute('data-theme');
     const initial = saved || existing || (mql.matches ? 'dark' : 'light');
-    setTheme(initial, false);
-    btn.addEventListener('click', ()=> setTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark', true));
-    if(!saved){
-      // Si el usuario no ha elegido, seguir sistema
-      try { mql.addEventListener('change', e => setTheme(e.matches ? 'dark' : 'light', false)); } catch{ /* Safari old */ }
-    }
 
     function setTheme(mode, persist){
       document.documentElement.setAttribute('data-theme', mode);
       document.body && document.body.setAttribute('data-theme', mode);
-      btn.setAttribute('aria-pressed', mode === 'dark' ? 'true' : 'false');
-      btn.title = mode === 'dark' ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro';
+      buttons.forEach(btn => {
+        btn.setAttribute('aria-pressed', mode === 'dark' ? 'true' : 'false');
+        btn.title = mode === 'dark' ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro';
+      });
       if(persist) localStorage.setItem(key, mode);
+    }
+
+    setTheme(initial, false);
+
+    buttons.forEach(btn => {
+      btn.addEventListener('click', ()=> {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        setTheme(currentTheme === 'dark' ? 'light' : 'dark', true);
+      });
+    });
+
+    if(!saved){
+      try { 
+        mql.addEventListener('change', e => setTheme(e.matches ? 'dark' : 'light', false));
+      } catch{ /* Safari old */ }
     }
   }
 
@@ -180,6 +259,31 @@
       tipEl.style.top  = (e.clientY + 12) + 'px';
     });
     document.addEventListener('mouseout', ()=>{ if(tipEl){ tipEl.remove(); tipEl=null; } });
+  }
+  
+  // Textos rotativos periódicos (toasts amables)
+  function bindRotatingTexts(){
+    const msgs = [
+      '✨ Esto está muy cool.',
+      '💡 Explora mis proyectos en Física/Óptica.',
+      '🚀 Data + Ciencia: combinación poderosa.',
+      '🧠 Pasa por el blog para aprender más.',
+      '📄 ¿Ya viste mi CV en Certificados?',
+      '🎥 Checa mi canal en Talks.'
+    ];
+    try {
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (prefersReduced) return;
+    } catch{}
+    let i = 0; let shown = 0; const maxShows = 5; const interval = 24000;
+    const tick = ()=>{
+      if (document.hidden) return; // no interrumpir cuando la pestaña no está visible
+      toast(msgs[i % msgs.length], 'base');
+      i++; shown++;
+      if (shown >= maxShows) clearInterval(timer);
+    };
+    const timer = setInterval(tick, interval);
+    setTimeout(tick, 4000);
   }
 
   // Enrutamiento simple por página
@@ -300,117 +404,83 @@
 
   // Projects Page
   async function initProjectsPage(){
-    const grid = $('#projectsGrid');
-    const searchInput = $('#search');
-    const sortSel = $('#sort');
-    const categories = ['Todos','Data Science','Física/Óptica','Electrónica/IoT','Web'];
-    const catWrap = $('#catChips');
-    const tagWrap = $('#tagChips');
+    const projectsGrid = document.getElementById('projectsGrid');
+    const searchInput = document.getElementById('search');
+    const sortSelect = document.getElementById('sort');
 
-    // Skeletons
-    grid.innerHTML = new Array(6).fill(0).map(()=>`<div class="card project skeleton" style="height:220px"></div>`).join('');
+    if (!projectsGrid || !searchInput || !sortSelect) return;
 
-    const data = await window.DataAPI.loadProjects();
+    let searchTerm = '';
+    let sortBy = 'recent';
 
-    // Tags dinámicos
-    const allTags = Array.from(new Set(data.flatMap(p=> p.tags || []))).sort();
+    const projectsData = await window.DataAPI.loadProjects();
 
-    // Estado de filtros
-    let state = { text:'', category:'Todos', tags:new Set(), sort:'recent' };
-
-    // Render chips
-    catWrap.innerHTML = categories.map(c=>`<button class="chip" data-cat="${c}">${c}</button>`).join('');
-    tagWrap.innerHTML = allTags.map(t=>`<button class="chip" data-tag="${t}">${t}</button>`).join('');
-
-    function applyFilters(){
-      let items = data.slice();
-      // texto
-      if(state.text){
-        const q = state.text.toLowerCase();
-        items = items.filter(p=>
-          p.title.toLowerCase().includes(q) ||
-          (p.description||'').toLowerCase().includes(q) ||
-          (p.tags||[]).some(t=> t.toLowerCase().includes(q))
-        );
-      }
-      // categoría
-      if(state.category && state.category!=='Todos') items = items.filter(p=> p.category===state.category);
-      // tags
-      if(state.tags.size) items = items.filter(p=> (p.tags||[]).some(t=> state.tags.has(t)) );
-      // sort
-      if(state.sort==='recent') items.sort((a,b)=> (b.year||0)-(a.year||0));
-      if(state.sort==='az') items.sort((a,b)=> a.title.localeCompare(b.title));
-      render(items);
-    }
-
-    function render(items){
-      grid.innerHTML = items.map(p=> projectCard(p)).join('');
-      // tilt
-      $$('.card.project').forEach(c=> c.setAttribute('data-tilt',''));
-    }
-
-    function projectCard(p){
+    function projectCard(p) {
       const year = p.year ? `<span class="badge">${p.year}</span>` : '';
       const cat = p.category ? `<span class="badge">${p.category}</span>` : '';
       const img = (p.images && p.images[0]) || 'assets/img/placeholder.svg';
-      const tags = (p.tags||[]).map(t=>`<span class="tag">${t}</span>`).join('');
-      return `
-        <article class="card project reveal" tabindex="0" role="button" aria-label="Ver ${p.title}">
-          <picture>
-            <img src="${img}" alt="${p.title}" loading="lazy" />
-          </picture>
-          <h3>${p.title}</h3>
-          <div class="meta">${year} ${cat}</div>
-          <p>${p.description||''}</p>
-          <div class="tags">${tags}</div>
-        </article>`;
-    }
-
-    // Eventos
-    searchInput.addEventListener('input', debounce((e)=>{ state.text = e.target.value.trim(); applyFilters(); }, 150));
-    sortSel.addEventListener('change', (e)=>{ state.sort = e.target.value; applyFilters(); });
-
-    catWrap.addEventListener('click', (e)=>{
-      const b = e.target.closest('[data-cat]'); if(!b) return;
-      state.category = b.getAttribute('data-cat');
-      $$('#catChips .chip').forEach(x=> x.classList.toggle('active', x===b));
-      applyFilters();
-    });
-
-    tagWrap.addEventListener('click', (e)=>{
-      const b = e.target.closest('[data-tag]'); if(!b) return;
-      const t = b.getAttribute('data-tag');
-      if(state.tags.has(t)) state.tags.delete(t); else state.tags.add(t);
-      b.classList.toggle('active');
-      applyFilters();
-    });
-
-    // Click para modal detalle
-    grid.addEventListener('click', (e)=>{
-      const card = e.target.closest('.card.project'); if(!card) return;
-      const title = card.querySelector('h3').textContent;
-      const project = data.find(p=> p.title===title);
-      if(project) openModal(projectDetail(project));
-    });
-
-    function projectDetail(p){
-      const imgs = (p.images||[]).map(src=> `<img src="${src}" alt="${p.title}" style="margin:.25rem 0; border-radius:8px;" loading="lazy" />`).join('');
-      const links = ['github','demo','video'].map(k=> p.links?.[k] ? `<a class="btn secondary" href="${p.links[k]}" target="_blank" rel="noopener">${k}</a>` : '').join('');
-      const metrics = p.metrics ? `<pre style="background:var(--card); padding:.5rem; border-radius:8px; overflow:auto">${JSON.stringify(p.metrics,null,2)}</pre>` : '';
-      return `<div>
+      const links = p.links || {};
+      const buttons = `
+        <div class="project-actions">
+          ${links.report ? `<a href="${links.report}" class="btn secondary" target="_blank" rel="noopener">Ver Reporte</a>` : ''}
+          ${links.sim ? `<a href="${links.sim}" class="btn secondary">Simulación</a>` : ''}
+          ${links.video ? `<a href="${links.video}" class="btn secondary" target="_blank" rel="noopener">Video</a>` : ''}
+          ${links.github ? `<a href="${links.github}" class="btn secondary" target="_blank" rel="noopener">GitHub</a>` : ''}
+        </div>
+      `;
+      const content = `
+        <picture>
+          <img src="${img}" alt="${p.title}" loading="lazy" />
+        </picture>
         <h3>${p.title}</h3>
+        <div class="meta">${year} ${cat}</div>
         <p>${p.description||''}</p>
-        <div style="display:flex; gap:.5rem; flex-wrap:wrap;">${(p.tags||[]).map(t=>`<span class='tag'>${t}</span>`).join('')}</div>
-        <div style="margin:.5rem 0; display:grid; grid-template-columns:1fr; gap:.25rem;">${imgs}</div>
-        ${metrics}
-        <div style="display:flex; gap:.5rem; flex-wrap:wrap; margin-top:.5rem;">${links}</div>
-      </div>`;
+        ${buttons}
+      `;
+
+      if (p.url) {
+        return `<a href="${p.url}" class="card project reveal" aria-label="Ver ${p.title}">${content}</a>`;
+      } else {
+        return `<article class="card project reveal" tabindex="0" role="button" aria-label="Ver ${p.title}">${content}</article>`;
+      }
     }
 
-    // Inicial
-    // Select default category
-    const firstCatBtn = $('#catChips .chip'); firstCatBtn && firstCatBtn.classList.add('active');
-    applyFilters();
+    function render() {
+      let filtered = [...projectsData];
+
+      // Filter by search term
+      if (searchTerm) {
+        const lowerTerm = searchTerm.toLowerCase();
+        filtered = filtered.filter(p =>
+          p.title.toLowerCase().includes(lowerTerm) ||
+          (p.description && p.description.toLowerCase().includes(lowerTerm)) ||
+          (p.tags && p.tags.some(t => t.toLowerCase().includes(lowerTerm)))
+        );
+      }
+
+      // Sort
+      if (sortBy === 'az') {
+        filtered.sort((a, b) => a.title.localeCompare(b.title));
+      } else { // 'recent'
+        filtered.sort((a, b) => (b.year || 0) - (a.year || 0));
+      }
+
+      projectsGrid.innerHTML = filtered.map(p => projectCard(p)).join('');
+    }
+
+    // Event Listeners
+    searchInput.addEventListener('input', debounce((e) => {
+      searchTerm = e.target.value.trim();
+      render();
+    }, 200));
+
+    sortSelect.addEventListener('change', (e) => {
+      sortBy = e.target.value;
+      render();
+    });
+
+    // Initial Render
+    render();
   }
 
   // Contacto
