@@ -7,14 +7,14 @@ const PROJECTS_SEED = [
   {
     "title": "Leyes de reflexión y refracción (Óptica)",
     "category": "Física/Óptica",
-    "description": "Demostración interactiva de las leyes de la reflexión y la refracción (Ley de Snell). Incluye visualización de rayos, cálculo de ángulo crítico y reflexión interna total para distintos índices de refracción.",
+    "description": "Proyecto integral sobre óptica geométrica que incluye un simulador interactivo de reflexión y refracción (Ley de Snell), un reporte de laboratorio con análisis físico, gráficas y datos en GitHub, además de un video explicativo de los conceptos clave.",
     "tags": ["Óptica", "Física", "Snell", "Simulación", "JavaScript"],
     "year": 2025,
     "metrics": { "casos": 120, "tirs_detectadas": 36 },
     "links": { 
-      "report": "public/docs/reporte-optica.pdf", 
+      "report": "assets/pdf/Reporte_Óptica_Práctica_1.pdf", 
       "sim": "public/demos/optica-leyes.html",
-      "github": "#",
+      "github": "https://github.com/alejandr688/laboratorio-optica/tree/main/Practica1",
       "video": "#"
     },
     "images": ["assets/img/Esquemapractica1.webp"]

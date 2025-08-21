@@ -90,12 +90,12 @@ a:hover { text-decoration: underline; }
 
 /* Avatar image */
 .avatar {
-  width: 100%;
-  max-width: 320px;
+  width: 180px; /* Aumentamos el tamaño */
+  height: 180px;
   aspect-ratio: 1 / 1;
   border-radius: 50%;
   object-fit: cover;
-  object-position: center 20%; /* 40% baja la imagen un poco */
+  object-position: center 20%;
   box-shadow: var(--shadow);
   border: 1px solid var(--border);
   background: var(--bg);
