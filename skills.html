@@ -9,24 +9,37 @@
   <meta property="og:title" content="Habilidades — Alejandro Pérez Romero" />
   <meta property="og:image" content="./assets/img/placeholder.svg" />
   <link rel="stylesheet" href="./assets/css/styles.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.15.1/devicon.min.css">
 </head>
 <body>
+  <!-- Barra de búsqueda -->
+  <div class="search-container">
+    <input type="text" class="search-input" placeholder="Buscar en esta sección..." id="searchInput">
+    <button class="search-button" onclick="toggleSearch()" aria-label="Buscar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"></circle>
+        <path d="m21 21-4.35-4.35"></path>
+      </svg>
+    </button>
+  </div>
+
   <main class="container">
     <section aria-labelledby="stack" class="reveal">
       <h1 id="stack">Habilidades & Stack</h1>
       <div class="skills-grid">
-        <div class="skill"><h4>Python</h4><div class="level"><span style="--w:92%"></span></div></div>
-        <div class="skill"><h4>R</h4><div class="level"><span style="--w:78%"></span></div></div>
-        <div class="skill"><h4>SQL</h4><div class="level"><span style="--w:80%"></span></div></div>
-        <div class="skill"><h4>JavaScript / TypeScript</h4><div class="level"><span style="--w:85%"></span></div></div>
-        <div class="skill"><h4>React</h4><div class="level"><span style="--w:70%"></span></div></div>
-        <div class="skill"><h4>MATLAB</h4><div class="level"><span style="--w:68%"></span></div></div>
-        <div class="skill"><h4>Pandas</h4><div class="level"><span style="--w:88%"></span></div></div>
-        <div class="skill"><h4>NumPy</h4><div class="level"><span style="--w:86%"></span></div></div>
-        <div class="skill"><h4>scikit-learn</h4><div class="level"><span style="--w:82%"></span></div></div>
-        <div class="skill"><h4>ggplot2</h4><div class="level"><span style="--w:72%"></span></div></div>
-        <div class="skill"><h4>Matplotlib</h4><div class="level"><span style="--w:80%"></span></div></div>
-        <div class="skill"><h4>OpenCV</h4><div class="level"><span style="--w:70%"></span></div></div>
+        <a href="projects.html?skill=Python" class="skill-card" data-skill="Python"><i class="devicon-python-plain"></i><span>Python</span></a>
+        <a href="projects.html?skill=R" class="skill-card" data-skill="R"><i class="devicon-r-plain"></i><span>R</span></a>
+        <a href="projects.html?skill=SQL" class="skill-card" data-skill="SQL"><i class="devicon-mysql-plain"></i><span>SQL</span></a>
+        <a href="projects.html?skill=JavaScript" class="skill-card" data-skill="JavaScript"><i class="devicon-javascript-plain"></i><span>JavaScript</span></a>
+        <a href="projects.html?skill=TypeScript" class="skill-card" data-skill="TypeScript"><i class="devicon-typescript-plain"></i><span>TypeScript</span></a>
+        <a href="projects.html?skill=React" class="skill-card" data-skill="React"><i class="devicon-react-original"></i><span>React</span></a>
+        <a href="projects.html?skill=MATLAB" class="skill-card" data-skill="MATLAB"><i class="devicon-matlab-plain"></i><span>MATLAB</span></a>
+        <a href="projects.html?skill=Pandas" class="skill-card" data-skill="Pandas"><i class="devicon-pandas-original"></i><span>Pandas</span></a>
+        <a href="projects.html?skill=NumPy" class="skill-card" data-skill="NumPy"><i class="devicon-numpy-original"></i><span>NumPy</span></a>
+        <a href="projects.html?skill=scikit-learn" class="skill-card no-icon" data-skill="scikit-learn"><span>scikit-learn</span></a>
+        <a href="projects.html?skill=ggplot2" class="skill-card no-icon" data-skill="ggplot2"><span>ggplot2</span></a>
+        <a href="projects.html?skill=Matplotlib" class="skill-card" data-skill="Matplotlib"><i class="devicon-matplotlib-plain"></i><span>Matplotlib</span></a>
+        <a href="projects.html?skill=OpenCV" class="skill-card" data-skill="OpenCV"><i class="devicon-opencv-original"></i><span>OpenCV</span></a>
       </div>
     </section>
   </main>

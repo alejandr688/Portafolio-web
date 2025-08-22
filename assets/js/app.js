@@ -6,6 +6,50 @@
   const $ = sel => document.querySelector(sel);
   const $$ = sel => Array.from(document.querySelectorAll(sel));
 
+  function openModal(content) {
+    let modal = document.getElementById('project-modal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'project-modal';
+      modal.className = 'modal';
+      modal.innerHTML = `
+        <div class="modal-content">
+          <button class="modal-close" aria-label="Cerrar">&times;</button>
+          <div class="modal-body"></div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+      });
+      modal.querySelector('.modal-close').addEventListener('click', closeModal);
+    }
+
+    modal.querySelector('.modal-body').innerHTML = content;
+    document.body.classList.add('modal-open');
+    modal.style.display = 'flex';
+    setTimeout(() => modal.classList.add('active'), 10);
+  }
+
+  function closeModal() {
+    const modal = document.getElementById('project-modal');
+    if (modal) {
+      modal.classList.remove('active');
+      document.body.classList.remove('modal-open');
+      setTimeout(() => { modal.style.display = 'none'; }, 300);
+    }
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      const modal = document.getElementById('project-modal');
+      if (modal && modal.classList.contains('active')) {
+        closeModal();
+      }
+    }
+  });
+
   document.addEventListener('DOMContentLoaded', init);
 
   function init(){
@@ -16,6 +60,7 @@
     // bindAnchorScrollSpy();
     bindCommonUI();
     bindRotatingTexts();
+    bindSearchButton();
     routeInit();
   }
 
@@ -408,45 +453,75 @@
     const searchInput = document.getElementById('search');
     const sortSelect = document.getElementById('sort');
 
-    if (!projectsGrid || !searchInput || !sortSelect) return;
+    if (!projectsGrid) return;
 
+    const urlParams = new URLSearchParams(window.location.search);
+    let activeSkill = urlParams.get('skill') || '';
     let searchTerm = '';
     let sortBy = 'recent';
 
     const projectsData = await window.DataAPI.loadProjects();
 
-    function projectCard(p) {
-      const year = p.year ? `<span class="badge">${p.year}</span>` : '';
-      const cat = p.category ? `<span class="badge">${p.category}</span>` : '';
+    function projectCard(p, index) {
       const img = (p.images && p.images[0]) || 'assets/img/placeholder.svg';
-      const links = p.links || {};
-      const buttons = `
-        <div class="project-actions">
-          ${links.report ? `<a href="${links.report}" class="btn secondary" target="_blank" rel="noopener">Ver Reporte</a>` : ''}
-          ${links.sim ? `<a href="${links.sim}" class="btn secondary">Simulación</a>` : ''}
-          ${links.video ? `<a href="${links.video}" class="btn secondary" target="_blank" rel="noopener">Video</a>` : ''}
-          ${links.github ? `<a href="${links.github}" class="btn secondary" target="_blank" rel="noopener">GitHub</a>` : ''}
+      const cat = p.category ? `<span class="project-card-category">${p.category}</span>` : '';
+      
+      // Asignar clases de tamaño basadas en el índice para un layout variado
+      const sizeClasses = [
+        'size-large',
+        'size-small',
+        'size-small',
+        'size-medium',
+        'size-small',
+        'size-medium',
+      ];
+      const sizeClass = sizeClasses[index % sizeClasses.length] || 'size-small';
+
+      const content = `
+        <div class="project-card-content">
+          <h3>${p.title}</h3>
+          ${cat}
         </div>
       `;
-      const content = `
-        <picture>
-          <img src="${img}" alt="${p.title}" loading="lazy" />
-        </picture>
-        <h3>${p.title}</h3>
-        <div class="meta">${year} ${cat}</div>
-        <p>${p.description||''}</p>
-        ${buttons}
+
+      const style = `background-image: url('${img}')`;
+
+      // El modal se abrirá con la descripción detallada
+      const detailContent = `
+        <h2>${p.title}</h2>
+        <div class="meta"><span class="badge">${p.year}</span> <span class="badge">${p.category}</span></div>
+        <img src="${img}" alt="${p.title}" style="width:100%; border-radius:8px; margin: 1rem 0;" />
+        <p>${p.description || ''}</p>
+        <div class="tags">${(p.tags || []).map(t => `<span class="tag">${t}</span>`).join('')}</div>
+        <div class="project-actions" style="margin-top:1rem;">
+          ${p.links.report ? `<a href="${p.links.report}" class="btn secondary" target="_blank" rel="noopener">Ver Reporte</a>` : ''}
+          ${p.links.sim ? `<a href="${p.links.sim}" class="btn secondary">Simulación</a>` : ''}
+          ${p.links.video ? `<a href="${p.links.video}" class="btn secondary" target="_blank" rel="noopener">Video</a>` : ''}
+          ${p.links.github ? `<a href="${p.links.github}" class="btn secondary" target="_blank" rel="noopener">GitHub</a>` : ''}
+        </div>
       `;
 
-      if (p.url) {
-        return `<a href="${p.url}" class="card project reveal" aria-label="Ver ${p.title}">${content}</a>`;
-      } else {
-        return `<article class="card project reveal" tabindex="0" role="button" aria-label="Ver ${p.title}">${content}</article>`;
-      }
+      const article = document.createElement('article');
+      article.className = `project-card reveal ${sizeClass}`;
+      article.setAttribute('style', style);
+      article.setAttribute('tabindex', '0');
+      article.setAttribute('role', 'button');
+      article.setAttribute('aria-label', `Ver detalle de ${p.title}`);
+      article.innerHTML = content;
+      article.addEventListener('click', () => openModal(detailContent));
+      
+      return article;
     }
 
     function render() {
       let filtered = [...projectsData];
+
+      // Filter by skill
+      if (activeSkill) {
+        filtered = filtered.filter(p => 
+          p.tags && p.tags.some(t => t.toLowerCase() === activeSkill.toLowerCase())
+        );
+      }
 
       // Filter by search term
       if (searchTerm) {
@@ -465,21 +540,63 @@
         filtered.sort((a, b) => (b.year || 0) - (a.year || 0));
       }
 
-      projectsGrid.innerHTML = filtered.map(p => projectCard(p)).join('');
+      projectsGrid.innerHTML = ''; // Limpiar grid
+      if (filtered.length > 0) {
+        filtered.forEach((p, index) => {
+          projectsGrid.appendChild(projectCard(p, index));
+        });
+      } else {
+        projectsGrid.innerHTML = `<p style="text-align:center; grid-column: 1 / -1;">No se encontraron proyectos con los filtros seleccionados.</p>`;
+      }
     }
 
     // Event Listeners
-    searchInput.addEventListener('input', debounce((e) => {
-      searchTerm = e.target.value.trim();
-      render();
-    }, 200));
+    if (searchInput) {
+      searchInput.addEventListener('input', debounce((e) => {
+        searchTerm = e.target.value.trim();
+        render();
+      }, 200));
+    }
 
-    sortSelect.addEventListener('change', (e) => {
-      sortBy = e.target.value;
-      render();
-    });
+    if (sortSelect) {
+      sortSelect.addEventListener('change', (e) => {
+        sortBy = e.target.value;
+        render();
+      });
+    }
+
+    function setupSkillFilter() {
+      const existingStatus = document.querySelector('.filter-status');
+      if (existingStatus) existingStatus.remove();
+
+      if (activeSkill) {
+        const filterStatus = document.createElement('div');
+        filterStatus.className = 'filter-status';
+        filterStatus.innerHTML = `
+          Mostrando proyectos con: <span class="tag">${activeSkill}</span>
+          <button class="btn-clear-filter" title="Quitar filtro">&times;</button>
+        `;
+        
+        const controls = document.querySelector('.project-filters');
+        if (controls) {
+          controls.insertAdjacentElement('afterend', filterStatus);
+        } else {
+          projectsGrid.before(filterStatus);
+        }
+
+        filterStatus.querySelector('.btn-clear-filter').addEventListener('click', () => {
+          activeSkill = '';
+          const url = new URL(window.location);
+          url.searchParams.delete('skill');
+          window.history.pushState({}, '', url);
+          filterStatus.remove();
+          render();
+        });
+      }
+    }
 
     // Initial Render
+    setupSkillFilter();
     render();
   }
 
@@ -575,6 +692,122 @@
         </div>
       </article>
     `).join('');
+  }
+
+  function bindSearchButton() {
+    const searchInput = $('#searchInput');
+    const searchButton = $('.search-button');
+    let highlightedElements = [];
+    let currentHighlightIndex = -1;
+
+    if (!searchInput || !searchButton) return;
+
+    window.toggleSearch = () => {
+      searchInput.classList.toggle('active');
+      if (searchInput.classList.contains('active')) {
+        searchInput.focus();
+      } else {
+        clearHighlights();
+      }
+    };
+
+    searchInput.addEventListener('input', debounce(e => {
+      searchInCurrentSection(e.target.value.trim());
+    }, 200));
+
+    searchInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        if (highlightedElements.length > 0) {
+          currentHighlightIndex = (currentHighlightIndex + 1) % highlightedElements.length;
+          navigateToHighlight(currentHighlightIndex);
+        }
+      }
+      if (e.key === 'Escape') {
+        window.toggleSearch();
+      }
+    });
+
+    function navigateToHighlight(index) {
+      $$('mark.active-highlight').forEach(el => el.classList.remove('active-highlight'));
+      const currentHighlight = highlightedElements[index];
+      if (currentHighlight) {
+        currentHighlight.classList.add('active-highlight');
+        currentHighlight.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        });
+      }
+    }
+
+    function searchInCurrentSection(term) {
+      clearHighlights();
+      if (!term) return;
+
+      const sections = $$('section[aria-labelledby]');
+      const visibleSections = [];
+      const windowHeight = window.innerHeight;
+
+      for (const section of sections) {
+        const rect = section.getBoundingClientRect();
+        if (rect.top < windowHeight && rect.bottom > 0) {
+          visibleSections.push(section);
+        }
+      }
+
+      if (visibleSections.length > 0) {
+        visibleSections.forEach(section => searchInAllElements(section, term));
+      }
+    }
+
+    function searchInAllElements(context, term) {
+      const treeWalker = document.createTreeWalker(context, NodeFilter.SHOW_TEXT, null, false);
+      const nodes = [];
+      while (treeWalker.nextNode()) {
+        const node = treeWalker.currentNode;
+        if (node.parentNode.nodeName === 'SCRIPT' || node.parentNode.nodeName === 'STYLE' || node.parentNode.nodeName === 'MARK') continue;
+        if (node.textContent.trim().length > 0) nodes.push(node);
+      }
+
+      const regex = new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+
+      nodes.forEach(node => {
+        const matches = [...node.textContent.matchAll(regex)];
+        if (matches.length > 0) {
+          let lastIndex = 0;
+          const fragment = document.createDocumentFragment();
+
+          matches.forEach(match => {
+            const index = match.index;
+            const before = node.textContent.slice(lastIndex, index);
+            if (before) fragment.appendChild(document.createTextNode(before));
+
+            const mark = document.createElement('mark');
+            mark.textContent = match[0];
+            fragment.appendChild(mark);
+            highlightedElements.push(mark);
+
+            lastIndex = index + match[0].length;
+          });
+
+          const after = node.textContent.slice(lastIndex);
+          if (after) fragment.appendChild(document.createTextNode(after));
+
+          node.parentNode.replaceChild(fragment, node);
+        }
+      });
+    }
+
+    function clearHighlights() {
+      highlightedElements = [];
+      currentHighlightIndex = -1;
+      const marks = $$('mark');
+      marks.forEach(mark => {
+        const parent = mark.parentNode;
+        parent.replaceChild(document.createTextNode(mark.textContent), mark);
+        parent.normalize();
+      });
+    }
   }
 
 })();

@@ -14,6 +14,17 @@
   <meta name="google-site-verification" content="NTzVULEDDcHTZvPJV0I1j968tyx6gSN5YbxncKZtkjE" />
 </head>
 <body>
+  <!-- Barra de búsqueda -->
+  <div class="search-container">
+    <input type="text" class="search-input" placeholder="Buscar en esta sección..." id="searchInput">
+    <button class="search-button" onclick="toggleSearch()" aria-label="Buscar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"></circle>
+        <path d="m21 21-4.35-4.35"></path>
+      </svg>
+    </button>
+  </div>
+
   <header class="hero">
     <div class="container hero-inner">
       <div class="hero-content">
@@ -25,8 +36,8 @@
           <h1>Hola, soy <span style="color:var(--primary)">Alejandro Pérez Romero</span></h1>
           <p class="lead">Data Science • Física/Óptica • Electrónica/IoT • Web. Me apasiona convertir datos y fenómenos físicos en historias claras y productos útiles.</p>
           <div class="hero-cta">
-            <a class="btn" href="./projects.html" data-tip="Ver proyectos">🚀 Ver proyectos</a>
-            <a class="btn secondary" href="./public/docs/Alejandro_Perez_Romero_CV.pdf" target="_blank" rel="noopener" data-tip="Descargar CV">⬇️ Descargar CV</a>
+            <a class="btn" href="./projects.html">🚀 Ver proyectos</a>
+            <a class="btn secondary" href="./public/docs/Alejandro_Perez_Romero_CV.pdf" target="_blank" rel="noopener">⬇️ Descargar CV</a>
           </div>
         </div>
       </div>

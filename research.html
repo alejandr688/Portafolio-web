@@ -11,6 +11,17 @@
   <link rel="stylesheet" href="./assets/css/styles.css" />
 </head>
 <body>
+  <!-- Barra de búsqueda -->
+  <div class="search-container">
+    <input type="text" class="search-input" placeholder="Buscar en esta sección..." id="searchInput">
+    <button class="search-button" onclick="toggleSearch()" aria-label="Buscar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"></circle>
+        <path d="m21 21-4.35-4.35"></path>
+      </svg>
+    </button>
+  </div>
+
   <main class="container">
     <section aria-labelledby="titulo" class="reveal">
       <h1 id="titulo">Investigación / Laboratorio</h1>

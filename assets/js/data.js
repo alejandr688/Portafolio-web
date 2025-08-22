@@ -10,7 +10,6 @@ const PROJECTS_SEED = [
     "description": "Proyecto integral sobre óptica geométrica que incluye un simulador interactivo de reflexión y refracción (Ley de Snell), un reporte de laboratorio con análisis físico, gráficas y datos en GitHub, además de un video explicativo de los conceptos clave.",
     "tags": ["Óptica", "Física", "Snell", "Simulación", "JavaScript"],
     "year": 2025,
-    "metrics": { "casos": 120, "tirs_detectadas": 36 },
     "links": { 
       "report": "assets/pdf/Reporte_Óptica_Práctica_1.pdf", 
       "sim": "public/demos/optica-leyes.html",
@@ -18,6 +17,63 @@ const PROJECTS_SEED = [
       "video": "#"
     },
     "images": ["assets/img/Esquemapractica1.webp"]
+  },
+  {
+    "title": "Análisis de Sentimiento en Redes Sociales",
+    "category": "Data Science",
+    "description": "Dashboard interactivo que analiza en tiempo real el sentimiento de tweets sobre temas de actualidad, usando NLP y visualizaciones con D3.js.",
+    "tags": ["NLP", "Python", "D3.js", "API"],
+    "year": 2024,
+    "links": { 
+      "github": "#"
+    },
+    "images": ["https://picsum.photos/seed/nlp/800/600"]
+  },
+  {
+    "title": "Generador de Arte con Redes Neuronales",
+    "category": "Inteligencia Artificial",
+    "description": "Implementación de un modelo StyleGAN2 para generar retratos artísticos únicos, con una interfaz web para experimentar con los parámetros del modelo.",
+    "tags": ["IA", "Deep Learning", "PyTorch", "React"],
+    "year": 2023,
+    "links": { 
+      "github": "#",
+      "sim": "#"
+    },
+    "images": ["https://picsum.photos/seed/stylegan/800/600"]
+  },
+  {
+    "title": "Plataforma de E-learning Adaptativo",
+    "category": "Desarrollo Web",
+    "description": "Sistema de gestión de aprendizaje que personaliza el contenido para cada estudiante basándose en su rendimiento, utilizando algoritmos de recomendación.",
+    "tags": ["Full-Stack", "Node.js", "Vue.js", "Machine Learning"],
+    "year": 2024,
+    "links": { 
+      "github": "#"
+    },
+    "images": ["https://picsum.photos/seed/elearning/800/600"]
+  },
+  {
+    "title": "Simulación de Dinámica de Fluidos (CFD)",
+    "category": "Ingeniería",
+    "description": "Simulación computacional para modelar el flujo de aire alrededor de un perfil alar, implementado en C++ con visualización en ParaView.",
+    "tags": ["CFD", "C++", "Física", "Simulación"],
+    "year": 2022,
+    "links": { 
+      "github": "#",
+      "report": "#"
+    },
+    "images": ["https://picsum.photos/seed/cfd/800/600"]
+  },
+  {
+    "title": "Detección de Anomalías en Series Temporales",
+    "category": "Data Science",
+    "description": "Detección de patrones inusuales en datos de sensores IoT utilizando modelos como LSTM y Isolation Forest para mantenimiento predictivo.",
+    "tags": ["IoT", "TensorFlow", "Series Temporales"],
+    "year": 2023,
+    "links": { 
+      "github": "#"
+    },
+    "images": ["https://picsum.photos/seed/iot/800/600"]
   }
 ];
 
