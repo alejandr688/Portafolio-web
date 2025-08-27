@@ -8,17 +8,25 @@
   --primary: #2563eb;
   --primary-hover: #1d4ed8;
 
-  /* Colores para el canvas en modo claro */
+  /* Fondo del canvas según tema (por defecto igual al fondo general) */
+  --canvas-bg: var(--bg);
+
+  /* Colores para trazos/elementos del canvas en modo claro */
   --c-incident: #007bff;
   --c-reflected: #6f42c1;
   --c-transmitted: #28a745;
   --c-interface: #6c757d;
-  --c-label: #34495e;
-  --c-protractor: rgba(0,0,0,0.3);
+  --c-label: var(--text);
+  --c-protractor: rgba(0,0,0,0.25);
+
+  /* Estilos del "pill" de etiqueta (modo claro) */
+  --label-pill-bg: rgba(0,0,0,0.06);
+  --label-pill-stroke: rgba(0,0,0,0.18);
+  --label-shadow: rgba(0,0,0,0.2);
 }
 
 body[data-theme='dark'] {
-  --bg: #0f172a;
+  --bg: #000000;
   --text: #e2e8f0;
   --muted: #94a3b8;
   --card-bg: #1e293b;
@@ -26,13 +34,21 @@ body[data-theme='dark'] {
   --primary: #60a5fa;
   --primary-hover: #3b82f6;
 
+  /* Fondo del canvas en modo oscuro (puede igualarse al fondo general) */
+  --canvas-bg: var(--bg);
+
   /* Colores para el canvas en modo oscuro */
   --c-incident: #00e5ff;
   --c-reflected: #b399ff;
   --c-transmitted: #34d399;
   --c-interface: #94a3b8;
-  --c-label: #e5e7eb;
+  --c-label: var(--text);
   --c-protractor: rgba(255,255,255,0.25);
+
+  /* Estilos del "pill" de etiqueta (modo oscuro) */
+  --label-pill-bg: rgba(255,255,255,0.08);
+  --label-pill-stroke: rgba(255,255,255,0.25);
+  --label-shadow: rgba(0,0,0,0.8);
 }
 
 body {
@@ -42,8 +58,23 @@ body {
   transition: background-color .2s, color .2s;
 }
 
+/* Utilidades y helpers */
+.back-link {
+  color: var(--muted);
+  text-decoration: none;
+  margin-bottom: 1rem;
+  display: inline-block;
+}
+.back-link:hover { text-decoration: underline; color: var(--text); }
+.mt-1 { margin-top: 1rem; }
+.mt-05 { margin-top: 0.5rem; }
+.hidden { display: none !important; }
+.sub-label { font-size: 0.8rem; color: var(--muted); margin-top: 0.25rem; }
+.helper-text { font-size: 0.75rem; color: var(--muted); margin-top: 0.5rem; }
+.flags-row { display: flex; gap: 1rem; align-items: center; }
+
 .container {
-  max-width: 1024px;
+  max-width: 1280px;
   margin: 0 auto;
   padding: 1.5rem;
 }
@@ -206,7 +237,7 @@ input[type="range"] {
   width: 100%;
   height: auto;
   border-radius: 0.75rem;
-  background-color: var(--bg);
+  background-color: var(--canvas-bg);
   cursor: crosshair;
   border: 1px solid var(--border);
   transition: background-color .2s, border-color .2s;
@@ -262,6 +293,13 @@ input[type="range"] {
   }
   .form-group {
     margin-bottom: 0.75rem;
+  }
+  /* Mostrar control móvil del ángulo y ocultar el de escritorio */
+  .angle-control-mobile {
+    display: block;
+  }
+  .angle-control-desktop {
+    display: none;
   }
   .color-inputs {
     display: none; /* Ocultar selectores de color que ya no se usan */

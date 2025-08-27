@@ -3,20 +3,50 @@
    - Todos los textos en español
 */
 
-const PROJECTS_SEED = [
+const OPTICS_PROJECTS_SEED = [
   {
-    "title": "Leyes de reflexión y refracción (Óptica)",
-    "category": "Física/Óptica",
-    "description": "Proyecto integral sobre óptica geométrica que incluye un simulador interactivo de reflexión y refracción (Ley de Snell), un reporte de laboratorio con análisis físico, gráficas y datos en GitHub, además de un video explicativo de los conceptos clave.",
+    "title": "Leyes de reflexión y refracción",
+    "category": "Óptica Geométrica",
+    "description": "Proyecto integral sobre óptica geométrica que incluye un simulador interactivo de reflexión y refracción (Ley de Snell), un reporte de laboratorio con análisis físico, gráficas y datos en GitHub.",
     "tags": ["Óptica", "Física", "Snell", "Simulación", "JavaScript"],
     "year": 2025,
-    "links": { 
-      "report": "assets/pdf/Reporte_Óptica_Práctica_1.pdf", 
-      "sim": "public/demos/optica-leyes.html",
-      "github": "https://github.com/alejandr688/laboratorio-optica/tree/main/Practica1",
-      "video": "#"
+    "links": {
+      "report": "./assets/pdf/Reporte_Óptica_Práctica_1.pdf",
+      "sim": "./public/demos/optica-leyes.html",
+      "github": "https://github.com/alejandr688/laboratorio-optica/tree/main/Practica1"
     },
-    "images": ["assets/img/Esquemapractica1.webp"]
+    "images": ["./assets/img/Esquemapractica1.webp"]
+  },
+  {
+    "title": "Simulación de un Interferómetro de Michelson",
+    "category": "Óptica Ondulatoria",
+    "description": "Visualización de patrones de interferencia y su cambio al variar la longitud de onda y la diferencia de caminos ópticos.",
+    "tags": ["Óptica", "Interferencia", "Simulación", "Python"],
+    "year": 2024,
+    "links": { "github": "#" },
+    "images": ["https://picsum.photos/seed/michelson/800/600"]
+  },
+  {
+    "title": "Análisis de Difracción con Procesamiento de Imágenes",
+    "category": "Óptica de Fourier",
+    "description": "Análisis de patrones de difracción de una rendija usando Python y OpenCV para medir características del patrón.",
+    "tags": ["Difracción", "OpenCV", "Python", "Procesamiento de Imágenes"],
+    "year": 2023,
+    "links": { "github": "#", "report": "#" },
+    "images": ["https://picsum.photos/seed/diffraction/800/600"]
+  }
+];
+
+const PROJECTS_SEED = [
+  {
+    "title": "Experimentos de Óptica",
+    "category": "Física/Óptica",
+    "description": "Una colección de simulaciones y análisis de fenómenos ópticos, desde la óptica geométrica hasta la ondulatoria y de Fourier.",
+    "tags": ["Óptica", "Física", "Simulación"],
+    "year": 2025,
+    "links": {},
+    "subcategoryPage": "optics.html",
+    "images": ["./assets/img/experimentos_optica.webp"]
   },
   {
     "title": "Análisis de Sentimiento en Redes Sociales",
@@ -173,6 +203,7 @@ const TALKS_SEED = [
 
 window.DataAPI = {
   loadProjects() { return Promise.resolve(PROJECTS_SEED); },
+  loadOpticsProjects() { return Promise.resolve(OPTICS_PROJECTS_SEED); },
   loadPosts() { return loadJSON('assets/data/posts.json', POSTS_SEED); },
   loadResearch() { return loadJSON('assets/data/research.json', RESEARCH_SEED); },
   loadTalks() { return Promise.resolve(TALKS_SEED); },

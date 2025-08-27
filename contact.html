@@ -25,20 +25,20 @@
   <main class="container">
     <section aria-labelledby="titulo" class="reveal">
       <h1 id="titulo">Contacto</h1>
-      <form id="contactForm" method="POST" action="https://formspree.io/f/mgvzbdgg" class="grid" style="grid-template-columns:1fr 1fr; gap:1rem; max-width:720px">
-        <div style="grid-column: span 1;">
+      <form id="contactForm" method="POST" action="https://formspree.io/f/mgvzbdgg" class="grid grid-2 max-w-720">
+        <div>
           <label for="name">Nombre</label>
-          <input id="name" name="name" type="text" required class="card" style="padding:.6rem" />
+          <input id="name" name="name" type="text" required class="card p-sm" />
         </div>
-        <div style="grid-column: span 1;">
+        <div>
           <label for="email">Email</label>
-          <input id="email" name="email" type="email" required class="card" style="padding:.6rem" />
+          <input id="email" name="email" type="email" required class="card p-sm" />
         </div>
-        <div style="grid-column: 1 / -1;">
+        <div class="col-span-2">
           <label for="message">Mensaje</label>
-          <textarea id="message" name="message" rows="6" required class="card" style="padding:.6rem"></textarea>
+          <textarea id="message" name="message" rows="6" required class="card p-sm"></textarea>
         </div>
-        <div style="grid-column: 1 / -1; display:flex; gap:.5rem;">
+        <div class="col-span-2 flex gap-05">
           <button class="btn" type="submit">Enviar</button>
         </div>
       </form>

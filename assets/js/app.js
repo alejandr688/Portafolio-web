@@ -6,50 +6,6 @@
   const $ = sel => document.querySelector(sel);
   const $$ = sel => Array.from(document.querySelectorAll(sel));
 
-  function openModal(content) {
-    let modal = document.getElementById('project-modal');
-    if (!modal) {
-      modal = document.createElement('div');
-      modal.id = 'project-modal';
-      modal.className = 'modal';
-      modal.innerHTML = `
-        <div class="modal-content">
-          <button class="modal-close" aria-label="Cerrar">&times;</button>
-          <div class="modal-body"></div>
-        </div>
-      `;
-      document.body.appendChild(modal);
-
-      modal.addEventListener('click', (e) => {
-        if (e.target === modal) closeModal();
-      });
-      modal.querySelector('.modal-close').addEventListener('click', closeModal);
-    }
-
-    modal.querySelector('.modal-body').innerHTML = content;
-    document.body.classList.add('modal-open');
-    modal.style.display = 'flex';
-    setTimeout(() => modal.classList.add('active'), 10);
-  }
-
-  function closeModal() {
-    const modal = document.getElementById('project-modal');
-    if (modal) {
-      modal.classList.remove('active');
-      document.body.classList.remove('modal-open');
-      setTimeout(() => { modal.style.display = 'none'; }, 300);
-    }
-  }
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      const modal = document.getElementById('project-modal');
-      if (modal && modal.classList.contains('active')) {
-        closeModal();
-      }
-    }
-  });
-
   document.addEventListener('DOMContentLoaded', init);
 
   function init(){
@@ -76,7 +32,7 @@
             <span class="dot" aria-hidden="true"></span>
             <span>Alejandro Pérez Romero</span>
           </a>
-          <div class="sidebar-controls" style="display:flex; gap:.35rem; align-items:center;">
+          <div class="sidebar-controls">
             <button class="theme-toggle" title="Tema claro/oscuro" aria-label="Cambiar tema">🌓</button>
             <button class="desktop-collapse" aria-label="Ocultar menú" aria-controls="sidebar" aria-expanded="true">⮜</button>
             <button class="sidebar-toggle" aria-label="Cerrar menú" aria-expanded="true" aria-controls="sidebar">✕</button>
@@ -113,7 +69,7 @@
           </div>
         </header>
         <div class="scroll-progress" aria-hidden="true"></div>
-        <button class="scroll-top" title="Subir" aria-label="Volver arriba" style="display:none">↑</button>
+        <button class="scroll-top" title="Subir" aria-label="Volver arriba">↑</button>
       </div>`;
     // Insertar shell y mover contenido existente dentro de app-content
     const existing = Array.from(document.body.children);
@@ -335,6 +291,7 @@
   function routeInit(){
     const page = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
     if(page === 'projects.html') initProjectsPage();
+    if(page === 'optics.html') initOpticsPage();
     if(page === 'contact.html') initContactPage();
     if(page === 'blog.html') initBlogPage();
     if(page === 'research.html') initResearchPage();
@@ -484,16 +441,16 @@
         </div>
       `;
 
-      const style = `background-image: url('${img}')`;
+      const bgImg = `<img class="project-card-bg" src="${img}" alt="" aria-hidden="true" loading="lazy">`;
 
       // El modal se abrirá con la descripción detallada
       const detailContent = `
         <h2>${p.title}</h2>
         <div class="meta"><span class="badge">${p.year}</span> <span class="badge">${p.category}</span></div>
-        <img src="${img}" alt="${p.title}" style="width:100%; border-radius:8px; margin: 1rem 0;" />
+        <img src="${img}" alt="${p.title}" />
         <p>${p.description || ''}</p>
         <div class="tags">${(p.tags || []).map(t => `<span class="tag">${t}</span>`).join('')}</div>
-        <div class="project-actions" style="margin-top:1rem;">
+        <div class="project-actions">
           ${p.links.report ? `<a href="${p.links.report}" class="btn secondary" target="_blank" rel="noopener">Ver Reporte</a>` : ''}
           ${p.links.sim ? `<a href="${p.links.sim}" class="btn secondary">Simulación</a>` : ''}
           ${p.links.video ? `<a href="${p.links.video}" class="btn secondary" target="_blank" rel="noopener">Video</a>` : ''}
@@ -501,16 +458,29 @@
         </div>
       `;
 
-      const article = document.createElement('article');
-      article.className = `project-card reveal ${sizeClass}`;
-      article.setAttribute('style', style);
-      article.setAttribute('tabindex', '0');
-      article.setAttribute('role', 'button');
-      article.setAttribute('aria-label', `Ver detalle de ${p.title}`);
-      article.innerHTML = content;
-      article.addEventListener('click', () => openModal(detailContent));
-      
-      return article;
+      if (p.subcategoryPage) {
+        const link = document.createElement('a');
+        link.href = p.subcategoryPage;
+        link.className = `project-card reveal ${sizeClass}`;
+        link.setAttribute('aria-label', `Ver categoría ${p.title}`);
+        link.innerHTML = bgImg + content;
+        return link;
+      } else {
+        const article = document.createElement('article');
+        article.className = `project-card reveal ${sizeClass}`;
+        article.setAttribute('tabindex', '0');
+        article.setAttribute('role', 'button');
+        article.setAttribute('aria-label', `Ver detalle de ${p.title}`);
+        article.innerHTML = bgImg + content;
+        article.addEventListener('click', () => openModal(detailContent));
+        article.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            openModal(detailContent);
+          }
+        });
+        return article;
+      }
     }
 
     function render() {
@@ -546,7 +516,7 @@
           projectsGrid.appendChild(projectCard(p, index));
         });
       } else {
-        projectsGrid.innerHTML = `<p style="text-align:center; grid-column: 1 / -1;">No se encontraron proyectos con los filtros seleccionados.</p>`;
+        projectsGrid.innerHTML = `<p class="empty-state">No se encontraron proyectos con los filtros seleccionados.</p>`;
       }
     }
 
@@ -600,6 +570,71 @@
     render();
   }
 
+  // Optics Page (similar to Projects)
+  async function initOpticsPage() {
+    const projectsGrid = document.getElementById('projectsGrid');
+    if (!projectsGrid) return;
+
+    const projectsData = await window.DataAPI.loadOpticsProjects();
+
+    function projectCard(p, index) {
+      const img = (p.images && p.images[0]) || 'assets/img/placeholder.svg';
+      const cat = p.category ? `<span class="project-card-category">${p.category}</span>` : '';
+      const sizeClasses = ['size-large', 'size-small', 'size-small', 'size-medium', 'size-small', 'size-medium'];
+      const sizeClass = sizeClasses[index % sizeClasses.length] || 'size-small';
+
+      const content = `
+        <div class="project-card-content">
+          <h3>${p.title}</h3>
+          ${cat}
+        </div>
+      `;
+      const bgImg = `<img class=\"project-card-bg\" src=\"${img}\" alt=\"\" aria-hidden=\"true\" loading=\"lazy\">`;
+
+      const detailContent = `
+        <h2>${p.title}</h2>
+        <div class="meta"><span class="badge">${p.year}</span> <span class="badge">${p.category}</span></div>
+        <img src="${img}" alt="${p.title}" />
+        <p>${p.description || ''}</p>
+        <div class="tags">${(p.tags || []).map(t => `<span class="tag">${t}</span>`).join('')}</div>
+        <div class="project-actions">
+          ${p.links.report ? `<a href="${p.links.report}" class="btn secondary" target="_blank" rel="noopener">Ver Reporte</a>` : ''}
+          ${p.links.sim ? `<a href="${p.links.sim}" class="btn secondary" target="_blank" rel="noopener">Simulación</a>` : ''}
+          ${p.links.video ? `<a href="${p.links.video}" class="btn secondary" target="_blank" rel="noopener">Video</a>` : ''}
+          ${p.links.github ? `<a href="${p.links.github}" class="btn secondary" target="_blank" rel="noopener">GitHub</a>` : ''}
+        </div>
+      `;
+
+      const article = document.createElement('article');
+      article.className = `project-card reveal ${sizeClass}`;
+      article.setAttribute('tabindex', '0');
+      article.setAttribute('role', 'button');
+      article.setAttribute('aria-label', `Ver detalle de ${p.title}`);
+      article.innerHTML = bgImg + content;
+      article.addEventListener('click', () => openModal(detailContent));
+      article.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openModal(detailContent);
+        }
+      });
+      return article;
+    }
+
+    function render() {
+      projectsGrid.innerHTML = '';
+      if (projectsData.length > 0) {
+        projectsData.forEach((p, index) => {
+          projectsGrid.appendChild(projectCard(p, index));
+        });
+      } else {
+        projectsGrid.innerHTML = `<p class="empty-state">No se encontraron proyectos en esta sección.</p>`;
+      }
+    }
+
+    render();
+  }
+
   // Contacto
   function initContactPage(){
     const form = $('#contactForm'); if(!form) return;
@@ -635,7 +670,7 @@
   async function initBlogPage(){
     const list = document.querySelector('#postsList');
     if(!list) return;
-    list.innerHTML = new Array(3).fill(0).map(()=>`<div class="card skeleton" style="height:110px"></div>`).join('');
+    list.innerHTML = new Array(3).fill(0).map(()=>`<div class="card skeleton h-110"></div>`).join('');
     const posts = await window.DataAPI.loadPosts();
     list.innerHTML = posts.map(p=>{
       const tags = (p.tags||[]).map(t=>`<span class="tag">${t}</span>`).join('');
@@ -652,7 +687,7 @@
   async function initResearchPage(){
     const list = document.querySelector('#researchList');
     if(!list) return;
-    list.innerHTML = new Array(3).fill(0).map(()=>`<div class="card skeleton" style="height:90px"></div>`).join('');
+    list.innerHTML = new Array(3).fill(0).map(()=>`<div class="card skeleton h-90"></div>`).join('');
     const items = await window.DataAPI.loadResearch();
     list.innerHTML = items.map(r=>`
       <article class="card reveal">
@@ -672,7 +707,7 @@
     list.innerHTML = items.map(c=>`
       <article class="card reveal">
         <h3>${c.title}</h3>
-        <div style="aspect-ratio:4/3; border-radius:8px; overflow:hidden; background:#fff;">
+        <div class="embed embed-4x3 embed-card embed-white">
           <iframe src="${c.path}#toolbar=0&navpanes=0&scrollbar=0" width="100%" height="100%" title="${c.title}" frameborder="0" loading="lazy"></iframe>
         </div>
         <a class="btn secondary" href="${c.path}" target="_blank" rel="noopener">Ver Completo</a>
@@ -687,7 +722,7 @@
     list.innerHTML = items.map(t=>`
       <article class="card reveal">
         <h3>${t.title}</h3>
-        <div style="aspect-ratio:16/9; background:#111; border-radius:8px; overflow:hidden;">
+        <div class="embed embed-16x9 embed-card embed-dark">
           <iframe width="100%" height="100%" src="https://www.youtube.com/embed/${t.videoId}" title="${t.title}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
         </div>
       </article>

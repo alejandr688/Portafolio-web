@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Leyes de reflexión y refracción — Simulador avanzado</title>
   <meta name="description" content="Simulador avanzado de óptica para explorar la Ley de Snell, reflexión interna total, ángulo de Brewster y coeficientes de Fresnel.">
@@ -10,7 +10,7 @@
 </head>
 <body>
   <div class="container">
-    <a href="../../projects.html" style="color: #94a3b8; text-decoration: none; margin-bottom: 1rem; display: inline-block;">← Volver a proyectos</a>
+    <a href="../../projects.html" class="back-link">← Volver a proyectos</a>
     <h1>Leyes de reflexión y refracción — Simulador avanzado</h1>
         <p class="lead">
       Ajusta ángulos e índices, alterna <b>incidencia externa</b> (arriba→abajo) o <b>interna</b> (abajo→arriba),
@@ -23,18 +23,18 @@
       <!-- Canvas (ahora a la izquierda) -->
       <div class="canvas-container">
         <canvas id="scene"></canvas>
-        <div class="control-card angle-control-mobile" style="margin-top: 1rem;">
+        <div class="control-card angle-control-mobile mt-1">
           <div class="form-group">
-            <label for="angleDegMobile">Ángulo de incidencia θᵢ (°)</label>
-            <input type="range" id="angleDegMobile" min="0" max="89.9" step="0.1">
-            <input type="number" id="angleDegNumMobile" min="0" max="89.9" step="0.1">
+            <label id="lbl-angleDegMobile" for="angleDegMobile">Ángulo de incidencia θᵢ (°)</label>
+            <input type="range" id="angleDegMobile" min="0" max="89.9" step="0.1" aria-labelledby="lbl-angleDegMobile">
+            <input type="number" id="angleDegNumMobile" min="0" max="89.9" step="0.1" aria-labelledby="lbl-angleDegMobile">
           </div>
         </div>
-        <p style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.5rem;">
+        <p class="helper-text">
           Consejo: prueba con n₁ &gt; n₂ y aumenta θᵢ hasta superar θc para observar <em>reflexión interna total</em>.
           Arrastra el punto de incidencia a lo largo de la interfaz.
         </p>
-        <div class="control-card" style="margin-top: 1rem;">
+        <div class="control-card mt-1">
           <h2>Lecturas</h2>
           <ul class="results-list" id="resultsList">
             <li>θᵢ = <b id="resThI">—</b>°, θʳ = <b id="resThR">—</b>° | θᵗ = <b id="resThT">—</b>°</li>
@@ -58,18 +58,20 @@
         <div class="form-group">
           <label for="topMat">Medio superior</label>
           <select id="topMat"></select>
-          <input type="number" id="nTopCustom" min="1" step="0.01" style="display:none; margin-top: 0.5rem;">
+          <label id="nTopCustomLabel" for="nTopCustom" class="sub-label hidden">Índice (n) personalizado</label>
+          <input type="number" id="nTopCustom" min="1" step="0.01" class="hidden mt-05" placeholder="1.50">
         </div>
         <div class="form-group">
           <label for="botMat">Medio inferior</label>
           <select id="botMat"></select>
-          <input type="number" id="nBotCustom" min="1" step="0.01" style="display:none; margin-top: 0.5rem;">
+          <label id="nBotCustomLabel" for="nBotCustom" class="sub-label hidden">Índice (n) personalizado</label>
+          <input type="number" id="nBotCustom" min="1" step="0.01" class="hidden mt-05" placeholder="1.00">
         </div>
         <div class="form-group">
           <label>Modo de incidencia</label>
-          <div class="toggle-group" id="fromTopToggle">
-            <button data-value="true" class="active">Externa ↑↓</button>
-            <button data-value="false">Interna ↓↑</button>
+          <div class="toggle-group" id="fromTopToggle" role="group" aria-label="Modo de incidencia">
+            <button data-value="true" class="active" aria-pressed="true">Externa ↑↓</button>
+            <button data-value="false" aria-pressed="false">Interna ↓↑</button>
           </div>
         </div>
       </div>
@@ -78,23 +80,23 @@
       <div class="control-card">
         <h2>Rayo y Ángulos</h2>
         <div class="form-group angle-control-desktop">
-          <label for="angleDeg">Ángulo de incidencia θᵢ (°)</label>
-          <input type="range" id="angleDeg" min="0" max="89.9" step="0.1">
-          <input type="number" id="angleDegNum" min="0" max="89.9" step="0.1">
+          <label id="lbl-angleDeg" for="angleDeg">Ángulo de incidencia θᵢ (°)</label>
+          <input type="range" id="angleDeg" min="0" max="89.9" step="0.1" aria-labelledby="lbl-angleDeg">
+          <input type="number" id="angleDegNum" min="0" max="89.9" step="0.1" aria-labelledby="lbl-angleDeg">
         </div>
         <div class="form-group">
           <label>Colores</label>
           <div class="color-inputs">
-            <label>Incidente <input type="color" id="colorIncident"></label>
-            <label>Reflejado <input type="color" id="colorReflected"></label>
-            <label>Transmitido <input type="color" id="colorTransmitted"></label>
+            <label>Incidente <input type="color" id="colorIncident" aria-label="Color del rayo incidente"></label>
+            <label>Reflejado <input type="color" id="colorReflected" aria-label="Color del rayo reflejado"></label>
+            <label>Transmitido <input type="color" id="colorTransmitted" aria-label="Color del rayo transmitido"></label>
           </div>
         </div>
         <div class="form-group">
           <label for="rayWidth">Grosor del rayo (<span id="rayWidthVal"></span>px)</label>
           <input type="range" id="rayWidth" min="1" max="6" step="0.5">
         </div>
-        <div class="form-group" style="display: flex; gap: 1rem;">
+        <div class="form-group flags-row">
           <label><input type="checkbox" id="showProtractor"> Transportador</label>
           <label><input type="checkbox" id="showLabels"> Etiquetas</label>
           <label><input type="checkbox" id="showArcs"> Arcos θ</label>

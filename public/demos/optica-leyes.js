@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- Referencias al DOM ---
   const canvas = $('#scene');
   const ctx = canvas.getContext('2d');
-  const W = 980, H = 560;
+  const W = 1200, H = 700;
   canvas.width = W; canvas.height = H;
   const yInterface = Math.round(H / 2);
 
@@ -64,6 +64,63 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     updateUIFromState();
     draw();
+  }
+
+  // --- Gestión de etiquetas para evitar superposición ---
+  let usedRects = [];
+  function resetLabelPlacements() { usedRects = []; }
+  function roundedRectPath(x, y, w, h, r=8) {
+    const rr = Math.min(r, w/2, h/2);
+    ctx.beginPath();
+    ctx.moveTo(x + rr, y);
+    ctx.lineTo(x + w - rr, y);
+    ctx.arcTo(x + w, y, x + w, y + rr, rr);
+    ctx.lineTo(x + w, y + h - rr);
+    ctx.arcTo(x + w, y + h, x + w - rr, y + h, rr);
+    ctx.lineTo(x + rr, y + h);
+    ctx.arcTo(x, y + h, x, y + h - rr, rr);
+    ctx.lineTo(x, y + rr);
+    ctx.arcTo(x, y, x + rr, y, rr);
+  }
+  function rectsIntersect(a, b) {
+    return !(a.x + a.w < b.x || b.x + b.w < a.x || a.y + a.h < b.y || b.y + b.h < a.y);
+  }
+  function placeLabel(text, cx, cy, color, align = 'center') {
+    const padding = 4;
+    ctx.save();
+    ctx.font = '16px ui-sans-serif, system-ui';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const m = ctx.measureText(text);
+    const w = Math.ceil(m.width) + padding * 2;
+    const h = Math.ceil((m.actualBoundingBoxAscent || 12) + (m.actualBoundingBoxDescent || 4)) + padding * 2;
+    const candidates = [
+      [0, 0], [0, 20], [0, -20], [20, 0], [-20, 0],
+      [20, 20], [-20, 20], [20, -20], [-20, -20],
+      [40, 0], [-40, 0], [0, 40], [0, -40]
+    ];
+    let placed = false, fx = cx, fy = cy;
+    for (const [dx, dy] of candidates) {
+      const x0 = cx + dx - w / 2;
+      const y0 = cy + dy - h / 2;
+      const rect = { x: x0, y: y0, w, h };
+      if (x0 < 6 || y0 < 6 || x0 + w > W - 6 || y0 + h > H - 6) continue;
+      if (usedRects.some(r => rectsIntersect(r, rect))) continue;
+      fx = cx + dx; fy = cy + dy;
+      usedRects.push(rect);
+      placed = true;
+      break;
+    }
+    // Fondo tipo "pill" para mejorar legibilidad
+    const bx = fx - w/2, by = fy - h/2;
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = getCssVar('--label-pill-bg');
+    roundedRectPath(bx, by, w, h, 8); ctx.fill();
+    ctx.strokeStyle = getCssVar('--label-pill-stroke'); ctx.lineWidth = 1; ctx.stroke();
+    // Texto con leve halo
+    ctx.fillStyle = color; ctx.shadowColor = getCssVar('--label-shadow'); ctx.shadowBlur = 6;
+    ctx.fillText(text, fx, fy);
+    ctx.restore();
   }
 
   // --- Lógica principal de dibujo ---
@@ -112,6 +169,9 @@ document.addEventListener('DOMContentLoaded', () => {
     ctx.fillStyle = colors.interface + '1A';
     ctx.fillRect(0, yInterface, W, H - yInterface);
 
+    // Reiniciar gestor de etiquetas
+    resetLabelPlacements();
+
     // Interfaz y normal
     ctx.strokeStyle = colors.interface; ctx.lineWidth = 1.25;
     ctx.beginPath(); ctx.moveTo(0, yInterface); ctx.lineTo(W, yInterface); ctx.stroke();
@@ -156,14 +216,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (showLabels) {
-      ctx.fillStyle = colors.label; ctx.font = "16px ui-sans-serif, system-ui";
-      ctx.fillText(`Medio superior (n=${nTop.toFixed(3)})`, 12, 22);
-      ctx.fillText(`Medio inferior (n=${nBot.toFixed(3)})`, 12, H - 12);
-      ctx.fillText("Incidente", startI.x + 8, startI.y + 12);
-      ctx.fillText("Reflejado", endR.x - 70, endR.y + 12);
+      // Etiquetas de medios (anclaje aproximado, recolocación si hay colisión)
+      placeLabel(`Medio superior (n=${nTop.toFixed(3)})`, 160, 22, colors.label, 'center');
+      placeLabel(`Medio inferior (n=${nBot.toFixed(3)})`, 180, H - 22, colors.label, 'center');
+
+      // Etiquetas de rayos
+      placeLabel("Incidente", startI.x + 10, startI.y + 10, colors.label, 'center');
+      placeLabel("Reflejado", endR.x - 60, endR.y + 10, colors.label, 'center');
       if (!TIR) {
-        const endT = dir(Math.abs(th2), sideOther);
-        ctx.fillText("Transmitido", pointX + endT.dx*len - 70, yInterface + endT.dy*len - 12);
+        const dT2 = dir(Math.abs(th2), sideOther);
+        const tx = pointX + dT2.dx * len;
+        const ty = yInterface + dT2.dy * len;
+        placeLabel("Transmitido", tx - 60, ty - 12, colors.label, 'center');
       }
     }
 
@@ -178,8 +242,12 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function arrow(x1, y1, x2, y2, color, width) {
-    ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = width;
+    ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = width; ctx.lineCap = 'round';
+    // leve brillo para visibilidad
+    ctx.save();
+    ctx.shadowColor = color; ctx.shadowBlur = 8;
     ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+    ctx.restore();
     const a = Math.atan2(y2 - y1, x2 - x1);
     const head = 10 + width * 1.2;
     ctx.beginPath(); ctx.moveTo(x2, y2);
@@ -190,7 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function drawProtractor(ctx, cx, cy, r, colors) {
     ctx.save();
-    ctx.strokeStyle = colors.protractor; ctx.fillStyle = colors.label; ctx.lineWidth = 1;
+    ctx.strokeStyle = colors.protractor; ctx.fillStyle = colors.label; ctx.lineWidth = 1.25;
     const drawHalf = (sign) => {
       ctx.beginPath(); ctx.arc(cx, cy, r, (sign === -1 ? Math.PI : 0), (sign === -1 ? 2 * Math.PI : Math.PI), true); ctx.stroke();
       for (let d = 0; d <= 90; d += 5) {
@@ -216,8 +284,8 @@ document.addEventListener('DOMContentLoaded', () => {
     ctx.beginPath(); ctx.arc(cx, cy, r, base, base + delta, delta < 0); ctx.stroke();
     const mid = base + delta / 2;
     const tx = cx + Math.cos(mid) * (r + 14), ty = cy + Math.sin(mid) * (r + 14);
-    ctx.fillStyle = color; ctx.font = '16px Arial'; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-    ctx.fillText(`${Math.abs(rad2deg(delta)).toFixed(1)}°`, tx, ty);
+    // Usar gestor de etiquetas para evitar solapamiento
+    placeLabel(`${Math.abs(rad2deg(delta)).toFixed(1)}°`, tx, ty, color, 'center');
     ctx.restore();
   }
 
@@ -227,10 +295,19 @@ document.addEventListener('DOMContentLoaded', () => {
     botMatEl.value = state.botMat;
     nTopCustomEl.value = state.nTopCustom;
     nBotCustomEl.value = state.nBotCustom;
-    nTopCustomEl.style.display = state.topMat === 'custom' ? 'block' : 'none';
-    nBotCustomEl.style.display = state.botMat === 'custom' ? 'block' : 'none';
+    // Mostrar/ocultar campos personalizados con clases y labels asociados
+    const topShow = state.topMat === 'custom';
+    const botShow = state.botMat === 'custom';
+    nTopCustomEl.classList.toggle('hidden', !topShow);
+    document.getElementById('nTopCustomLabel').classList.toggle('hidden', !topShow);
+    nBotCustomEl.classList.toggle('hidden', !botShow);
+    document.getElementById('nBotCustomLabel').classList.toggle('hidden', !botShow);
     
-    $$('#fromTopToggle button').forEach(b => b.classList.toggle('active', String(state.fromTop) === b.dataset.value));
+    $$('#fromTopToggle button').forEach(b => {
+      const active = String(state.fromTop) === b.dataset.value;
+      b.classList.toggle('active', active);
+      b.setAttribute('aria-pressed', active ? 'true' : 'false');
+    });
     
     angleDegEl.value = state.angleDeg;
     angleDegNumEl.value = state.angleDeg;
