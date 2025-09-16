@@ -49,15 +49,15 @@ const PROJECTS_SEED = [
     "images": ["./assets/img/experimentos_optica.webp"]
   },
   {
-    "title": "Análisis de Sentimiento en Redes Sociales",
+    "title": "Análisis de Datasets",
     "category": "Data Science",
-    "description": "Dashboard interactivo que analiza en tiempo real el sentimiento de tweets sobre temas de actualidad, usando NLP y visualizaciones con D3.js.",
+    "description": "Análisis de diferentes datasets aplicando técnicas de data science: limpieza, EDA, visualización y modelos predictivos comparativos.",
     "tags": ["NLP", "Python", "D3.js", "API"],
-    "year": 2024,
+    "year": 2025,
     "links": { 
       "github": "#"
     },
-    "images": ["https://picsum.photos/seed/nlp/800/600"]
+    "images": ["./assets/img/miniaturaanalisisdedatos_optimizado.webp"]
   },
   {
     "title": "Generador de Arte con Redes Neuronales",
