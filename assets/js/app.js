@@ -580,45 +580,35 @@
     function projectCard(p, index) {
       const img = (p.images && p.images[0]) || 'assets/img/placeholder.svg';
       const cat = p.category ? `<span class="project-card-category">${p.category}</span>` : '';
-      const sizeClasses = ['size-large', 'size-small', 'size-small', 'size-medium', 'size-small', 'size-medium'];
+      const sizeClasses = ['size-large', 'size-medium', 'size-small', 'size-medium', 'size-small', 'size-medium'];
       const sizeClass = sizeClasses[index % sizeClasses.length] || 'size-small';
 
       const content = `
         <div class="project-card-content">
           <h3>${p.title}</h3>
           ${cat}
+          <div class="project-actions">
+            ${p.links.report ? `<a href="${p.links.report}" class="btn secondary" target="_blank" rel="noopener">Ver Reporte</a>` : ''}
+            ${p.links.sim ? `<a href="${p.links.sim}" class="btn secondary" target="_blank" rel="noopener">Simulación</a>` : ''}
+            ${p.links.github ? `<a href="${p.links.github}" class="btn secondary" target="_blank" rel="noopener">GitHub</a>` : ''}
+          </div>
         </div>
       `;
-      const bgImg = `<img class=\"project-card-bg\" src=\"${img}\" alt=\"\" aria-hidden=\"true\" loading=\"lazy\">`;
+      const bgImg = `<img class="project-card-bg" src="${img}" alt="" aria-hidden="true" loading="lazy">`;
 
-      const detailContent = `
-        <h2>${p.title}</h2>
-        <div class="meta"><span class="badge">${p.year}</span> <span class="badge">${p.category}</span></div>
-        <img src="${img}" alt="${p.title}" />
-        <p>${p.description || ''}</p>
-        <div class="tags">${(p.tags || []).map(t => `<span class="tag">${t}</span>`).join('')}</div>
-        <div class="project-actions">
-          ${p.links.report ? `<a href="${p.links.report}" class="btn secondary" target="_blank" rel="noopener">Ver Reporte</a>` : ''}
-          ${p.links.sim ? `<a href="${p.links.sim}" class="btn secondary" target="_blank" rel="noopener">Simulación</a>` : ''}
-          ${p.links.video ? `<a href="${p.links.video}" class="btn secondary" target="_blank" rel="noopener">Video</a>` : ''}
-          ${p.links.github ? `<a href="${p.links.github}" class="btn secondary" target="_blank" rel="noopener">GitHub</a>` : ''}
-        </div>
-      `;
-
-      const article = document.createElement('article');
-      article.className = `project-card reveal ${sizeClass}`;
-      article.setAttribute('tabindex', '0');
-      article.setAttribute('role', 'button');
-      article.setAttribute('aria-label', `Ver detalle de ${p.title}`);
-      article.innerHTML = bgImg + content;
-      article.addEventListener('click', () => openModal(detailContent));
-      article.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          openModal(detailContent);
-        }
-      });
-      return article;
+      if (p.subcategoryPage) {
+        const link = document.createElement('a');
+        link.href = p.subcategoryPage;
+        link.className = `project-card reveal ${sizeClass}`;
+        link.setAttribute('aria-label', `Ver detalle de ${p.title}`);
+        link.innerHTML = bgImg + content;
+        return link;
+      } else {
+        const article = document.createElement('article');
+        article.className = `project-card reveal ${sizeClass}`;
+        article.innerHTML = bgImg + content;
+        return article;
+      }
     }
 
     function render() {

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lentes Delgadas y Ecuación de Gauss — Alejandro Pérez Romero</title>
+  <meta name="description" content="Explicación detallada sobre la formación de imágenes con lentes delgadas y la ecuación de Gauss." />
+  <link rel="icon" href="../../assets/img/favicon.webp" type="image/webp" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\(', '\)']],
+        displayMath: [['$$', '$$'], ['\[', '\]']]
+      },
+      svg: {
+        fontCache: 'global'
+      }
+    };
+  </script>
+  <script type="text/javascript" id="MathJax-script" async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
+  </script>
+</head>
+<body>
+  <main class="container">
+    <section aria-labelledby="titulo" class="reveal">
+      <div class="section-head">
+        <h1 id="titulo">Lentes Delgadas y Ecuación de Gauss</h1>
+        <a href="../../optics.html" class="btn secondary">← Volver a los experimentos</a>
+      </div>
+      <article class="content">
+        <h2>Introducción Teórica</h2>
+        <p>
+          Una lente delgada es un componente óptico que refracta la luz y cuyo espesor es despreciable en comparación con sus radios de curvatura. Se clasifican principalmente en dos tipos:
+        </p>
+        <ul>
+            <li><strong>Lentes convergentes (convexas):</strong> Son más gruesas en el centro que en los bordes. Hacen que los rayos de luz paralelos que inciden sobre ellas converjan en un punto llamado <strong>foco imagen</strong> ($f'$). Su distancia focal se considera positiva.</li>
+            <li><strong>Lentes divergentes (cóncavas):</strong> Son más delgadas en el centro que en los bordes. Hacen que los rayos de luz paralelos parezcan divergir desde un punto virtual llamado <strong>foco imagen</strong> ($f'$). Su distancia focal se considera negativa.</li>
+        </ul>
+
+        <h2>La Ecuación de Gauss para Lentes Delgadas</h2>
+        <p>
+          La relación entre la posición del objeto ($s$), la posición de la imagen ($s'$) y la distancia focal ($f'$) de una lente delgada viene dada por la <strong>Ecuación de Gauss</strong>:
+        </p>
+        $$\frac{1}{s'} - \frac{1}{s} = \frac{1}{f'}$$
+        <p>Donde se aplica la siguiente convención de signos (norma DIN):</p>
+        <ul>
+            <li>$s$: Distancia del objeto al centro óptico. Es <strong>negativa</strong> si el objeto está a la izquierda de la lente (objeto real).</li>
+            <li>$s'$: Distancia de la imagen al centro óptico. Es <strong>positiva</strong> si la imagen se forma a la derecha de la lente (imagen real) y <strong>negativa</strong> si se forma a la izquierda (imagen virtual).</li>
+            <li>$f'$: Distancia focal imagen. Es <strong>positiva</strong> para lentes convergentes y <strong>negativa</strong> para lentes divergentes.</li>
+        </ul>
+
+        <h2>Aumento Lateral (Magnificación)</h2>
+        <p>
+          El aumento lateral ($M$) describe la relación entre el tamaño de la imagen ($y'$) y el tamaño del objeto ($y$). También se puede expresar en función de las distancias $s$ y $s'$.
+        </p>
+        $$M = \frac{y'}{y} = \frac{s'}{s}$$
+        <ul>
+            <li>Si $|M| > 1$, la imagen es más grande que el objeto.</li>
+            <li>Si $|M| < 1$, la imagen es más pequeña.</li>
+            <li>Si $M > 0$, la imagen es derecha (no invertida).</li>
+            <li>Si $M < 0$, la imagen está invertida.</li>
+        </ul>
+
+        <h2>Construcción Gráfica de Imágenes (Ray Tracing)</h2>
+        <p>
+          Para determinar gráficamente la posición y el tamaño de una imagen, se trazan al menos dos de los tres rayos principales desde la punta del objeto:
+        </p>
+        <ol>
+          <li><strong>Rayo paralelo:</strong> Un rayo que viaja paralelo al eje óptico, después de refractarse en la lente, pasa por el foco imagen ($f'$).</li>
+          <li><strong>Rayo focal:</strong> Un rayo que pasa por el foco objeto ($f$), después de refractarse en la lente, emerge paralelo al eje óptico.</li>
+          <li><strong>Rayo central:</strong> Un rayo que pasa por el centro óptico de la lente no sufre desviación.</li>
+        </ol>
+        <p>La imagen se forma en el punto donde estos tres rayos (o sus prolongaciones) se cruzan.</p>
+
+        <h2>Conclusiones del Experimento</h2>
+        <p>
+          Aquí puedes añadir las conclusiones de tu práctica de laboratorio, comparando los resultados experimentales (posiciones y tamaños de imagen medidos) con los valores teóricos calculados mediante la ecuación de Gauss y la fórmula de aumento.
+        </p>
+
+      </article>
+    </section>
+  </main>
+  <script src="../../assets/js/data.js" defer></script>
+  <script src="../../assets/js/app.js" defer></script>
+  <script src="../../assets/js/animations.js" defer></script>
+</body>
+</html>

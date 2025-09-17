@@ -18,13 +18,17 @@ const OPTICS_PROJECTS_SEED = [
     "images": ["./assets/img/Esquemapractica1.webp"]
   },
   {
-    "title": "Simulación de un Interferómetro de Michelson",
-    "category": "Óptica Ondulatoria",
+    "title": "Formación de Imágenes con Lentes Delgadas y Comprobación de la Ecuación de Gauss",
+    "category": "Óptica Geométrica",
     "description": "Visualización de patrones de interferencia y su cambio al variar la longitud de onda y la diferencia de caminos ópticos.",
     "tags": ["Óptica", "Interferencia", "Simulación", "Python"],
     "year": 2024,
-    "links": { "github": "#" },
-    "images": ["https://picsum.photos/seed/michelson/800/600"]
+    "links": {
+      "report": "./assets/pdf/Reporte_Óptica_Práctica_3.pdf",
+      "github": "#"
+    },
+    "images": ["./assets/img/practica3.webp"],
+    "subcategoryPage": "./public/demos/lentes-delgadas.html"
   },
   {
     "title": "Análisis de Difracción con Procesamiento de Imágenes",
